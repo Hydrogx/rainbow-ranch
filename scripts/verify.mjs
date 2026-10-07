@@ -442,6 +442,22 @@ async function main() {
     await shot('11b-day-again');
   });
 
+  await step('小屏幕适配（平板 / 手机）', async () => {
+    await page.setViewport({ width: 1024, height: 768, deviceScaleFactor: 1 });
+    await sleep(1400);
+    await shot('19-tablet');
+    await call('openPanel', 'shop');
+    await sleep(800);
+    await shot('19b-tablet-shop');
+    await call('closePanel');
+    await sleep(400);
+    await page.setViewport({ width: 414, height: 896, deviceScaleFactor: 2 });
+    await sleep(1600);
+    await shot('20-phone');
+    await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
+    await sleep(900);
+  });
+
   await step('存档：刷新页面后恢复进度', async () => {
     const before = await call('state');
     await page.reload({ waitUntil: 'domcontentloaded' });
