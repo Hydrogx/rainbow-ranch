@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="48"
+     viewBox="0 0 128 48" shape-rendering="crispEdges">
+  <defs>
+    <g id="boy">
+      <!-- Hair and face -->
+      <path fill="#49352f" d="M10 4h12v2h3v5h1v10h-3v3H9v-3H6V11h1V7h3z"/>
+      <path fill="#80513c" d="M10 6h11v2h3v4H8V9h2z"/>
+      <path fill="#a36b45" d="M11 6h7v2h-7z"/>
+      <path fill="#efb983" d="M9 13h14v8h-2v3H11v-3H9z"/>
+      <path fill="#ffd49e" d="M11 13h10v7H11z"/>
+      <path fill="#49352f" d="M9 10h5v4h-3v2H9zm10 0h4v6h-2v-3h-2z"/>
+      <path fill="#322d32" d="M12 16h2v3h-2zm6 0h2v3h-2z"/>
+      <path fill="#d58a72" d="M10 20h3v1h-3zm9 0h3v1h-3z"/>
+      <path fill="#a86251" d="M15 21h3v1h-3z"/>
+      <!-- Shirt and overalls -->
+      <path fill="#493b3b" d="M10 24h12v2h3v7h-3v5H10v-5H7v-7h3z"/>
+      <path fill="#f1e8ca" d="M10 25h12v2h2v5H8v-5h2z"/>
+      <path fill="#d4c6a0" d="M8 30h3v3H8zm13 0h3v3h-3z"/>
+      <path fill="#427a91" d="M11 25h3v5h4v-5h3v12H11z"/>
+      <path fill="#639fb1" d="M12 30h8v5h-8z"/>
+      <path fill="#31586e" d="M10 35h12v3H10z"/>
+      <path fill="#e6bc68" d="M12 29h1v1h-1zm7 0h1v1h-1z"/>
+      <path fill="#427a91" d="M14 32h4v2h-4z"/>
+    </g>
+    <g id="left-arm">
+      <path fill="#493b3b" d="M6 29h4v8H6z"/>
+      <path fill="#efb983" d="M7 30h3v6H7z"/>
+    </g>
+    <g id="right-arm">
+      <path fill="#493b3b" d="M22 29h4v8h-4z"/>
+      <path fill="#efb983" d="M22 30h3v6h-3z"/>
+    </g>
+    <g id="leg">
+      <path fill="#31586e" d="M0 0h5v6H0z"/>
+      <path fill="#54899b" d="M1 0h3v4H1z"/>
+      <path fill="#49352f" d="M-1 5h6v4h-6z"/>
+      <path fill="#866047" d="M0 5h4v2H0z"/>
+    </g>
+  </defs>
+  <g>
+    <use href="#leg" x="10" y="36"/><use href="#leg" x="17" y="34"/>
+    <use href="#left-arm" y="-1"/><use href="#right-arm" y="1"/>
+    <use href="#boy"/>
+  </g>
+  <g transform="translate(32 -1)">
+    <use href="#leg" x="10" y="36"/><use href="#leg" x="17" y="36"/>
+    <use href="#left-arm"/><use href="#right-arm"/><use href="#boy"/>
+  </g>
+  <g transform="translate(64 0)">
+    <use href="#leg" x="10" y="34"/><use href="#leg" x="17" y="36"/>
+    <use href="#left-arm" y="1"/><use href="#right-arm" y="-1"/>
+    <use href="#boy"/>
+  </g>
+  <g transform="translate(96 -1)">
+    <use href="#leg" x="10" y="36"/><use href="#leg" x="17" y="36"/>
+    <use href="#left-arm"/><use href="#right-arm"/><use href="#boy"/>
+  </g>
+</svg>

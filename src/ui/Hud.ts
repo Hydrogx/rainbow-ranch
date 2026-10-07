@@ -1,6 +1,7 @@
 /**
  * 顶部状态栏 + 底部快捷栏 + 提示 & 飘字（PRD 第 9 节）
  */
+import { ART } from '../assets';
 import { itemDef, CROPS } from '../data/catalog';
 import { bus, EV } from '../game/EventBus';
 import { store } from '../game/GameState';
@@ -308,16 +309,26 @@ export class Hud {
   /** 角色预览用的分层 SVG（换装界面用） */
   static wardrobePreview(): string {
     const eq = store.data.equipped;
-    const base = store.data.character === 'boy' ? 'characters/boy' : 'characters/girl';
+    const isBoy = store.data.character === 'boy';
     // 注意顺序：背包在身体后面，其余装扮叠在身体上面
-    const layers: string[] = [];
-    if (eq.backpack) layers.push('characters/backpack');
-    layers.push(base);
-    if (eq.top) layers.push(eq.top === 'overalls' ? 'characters/overalls' : 'characters/raincoat');
-    if (eq.shoes) layers.push(eq.shoes === 'boots' ? 'characters/boots' : 'characters/sneakers');
-    if (eq.hat) layers.push(eq.hat === 'hat_straw' ? 'characters/hat_straw' : eq.hat === 'hat_rain' ? 'characters/hat_rain' : 'characters/hat_chef');
-    if (eq.accessory) layers.push(eq.accessory === 'ears' ? 'characters/ears' : eq.accessory === 'hairpin' ? 'characters/hairpin' : 'characters/scarf');
-    return layers.filter(Boolean).map((key) => `<div class="layer">${rawSvg(key, 'svg-icon')}</div>`).join('');
+    const parts: string[] = [];
+    if (eq.backpack) parts.push(`<div class="layer">${rawSvg('characters/backpack', 'svg-icon')}</div>`);
+    if (isBoy && ART['characters/boy_walk']) {
+      // 男孩用像素行走图的站立帧（CSS 裁切出第 2 帧）
+      parts.push(`<div class="layer pixel-layer">${rawSvg('characters/boy_walk', 'svg-icon')}</div>`);
+    } else {
+      parts.push(`<div class="layer">${rawSvg(isBoy ? 'characters/boy' : 'characters/girl', 'svg-icon')}</div>`);
+    }
+    const overlays: Array<string | undefined> = [
+      eq.top ? (eq.top === 'overalls' ? 'characters/overalls' : 'characters/raincoat') : undefined,
+      eq.shoes ? (eq.shoes === 'boots' ? 'characters/boots' : 'characters/sneakers') : undefined,
+      eq.hat ? (eq.hat === 'hat_straw' ? 'characters/hat_straw' : eq.hat === 'hat_rain' ? 'characters/hat_rain' : 'characters/hat_chef') : undefined,
+      eq.accessory ? (eq.accessory === 'ears' ? 'characters/ears' : eq.accessory === 'hairpin' ? 'characters/hairpin' : 'characters/scarf') : undefined,
+    ];
+    overlays.forEach((key) => {
+      if (key) parts.push(`<div class="layer">${rawSvg(key, 'svg-icon')}</div>`);
+    });
+    return parts.join('');
   }
 
   static closeButton(): string {

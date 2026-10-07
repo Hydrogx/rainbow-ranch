@@ -291,9 +291,19 @@ async function main() {
     await sleep(2400);
     await shot('17-barn');
     await call('teleport', 680, 520);
+    await sleep(800);
+    let started = false;
+    for (let i = 0; i < 4 && !started; i += 1) {
+      await call('interactNearest');
+      await sleep(500);
+      started = await page.evaluate(() => {
+        const s = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Barn');
+        return !!(s && s.playing);
+      });
+    }
+    console.log(`   挤奶小游戏已开始: ${started}`);
+    if (!started) errors.push('[牛棚] 没能开始挤奶小游戏');
     await sleep(600);
-    await call('interactNearest');
-    await sleep(1200);
     await shot('17b-milking');
     const milkBefore = await page.evaluate(() => window.__RANCH__.store.count('milk'));
     for (let i = 0; i < 9; i += 1) {
@@ -469,6 +479,42 @@ async function main() {
     console.log(`   刷新后: 金币 ${after.coins} 星星 ${after.stars} 第 ${after.day} 天`);
     if (after.coins !== before.coins) errors.push(`[存档] 刷新后金币不一致：${before.coins} -> ${after.coins}`);
     if (after.scene !== 'Ranch') errors.push(`[存档] 刷新后没有回到牧场，当前场景 ${after.scene}`);
+  });
+
+  await step('男孩：像素行走动画与换装预览', async () => {
+    await page.evaluate(() => localStorage.removeItem('rainbow-ranch-save'));
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await waitReady();
+    await sleep(1400);
+    await call('startGame', 'boy');
+    await sleep(2600);
+    await shot('21-boy-ranch');
+    const frames = [];
+    await page.keyboard.down('ArrowLeft');
+    // 无头环境是软件渲染，帧率很低，取样窗口要长一些才能覆盖完整循环
+    for (let i = 0; i < 12; i += 1) {
+      await sleep(220);
+      frames.push(
+        await page.evaluate(() => {
+          const s = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+          return s.player.baseSprite.frame.name;
+        }),
+      );
+    }
+    await shot('21b-boy-walk');
+    await page.keyboard.up('ArrowLeft');
+    await sleep(500);
+    const idleFrame = await page.evaluate(() => {
+      const s = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+      return s.player.baseSprite.frame.name;
+    });
+    console.log(`   走路帧序列: ${frames.join(' → ')}，停下后: ${idleFrame}`);
+    if (new Set(frames).size < 2) errors.push('[男孩] 行走动画没有切换帧');
+    await call('openPanel', 'wardrobe');
+    await sleep(900);
+    await shot('21c-boy-wardrobe');
+    await call('closePanel');
+    await sleep(400);
   });
 
   await browser.close();

@@ -7,7 +7,7 @@ import { store } from '../game/GameState';
 import { audio } from '../systems/AudioSystem';
 import { bus, EV } from '../game/EventBus';
 import type { CharacterKind } from '../game/types';
-import { ART_K } from '../systems/TextureFactory';
+import { ART_K, PIXEL_IDLE_FRAME, PIXEL_SHEET_KEY } from '../systems/TextureFactory';
 
 export class TitleScene extends Phaser.Scene {
   constructor() {
@@ -91,7 +91,11 @@ export class TitleScene extends Phaser.Scene {
   private makeCharacterButton(x: number, y: number, kind: CharacterKind, scale: number): void {
     const container = this.add.container(x, y).setDepth(6);
     const circle = this.add.circle(0, -64 * scale, 112 * scale, kind === 'boy' ? 0x9ed8f5 : 0xffd9e7).setStrokeStyle(8, 0x5a3d2e, 0.85);
-    const character = this.add.image(0, 52 * scale, `characters/${kind}`).setOrigin(0.5, 1).setScale(0.8 * scale * ART_K);
+    // 男孩用像素行走图的站立帧（与游戏内保持一致），女孩仍是矢量小人
+    const usePixelBoy = kind === 'boy' && this.textures.exists(PIXEL_SHEET_KEY);
+    const character = usePixelBoy
+      ? this.add.sprite(0, 52 * scale, PIXEL_SHEET_KEY, PIXEL_IDLE_FRAME).setOrigin(0.5, 1).setScale((160 / 48) * scale)
+      : this.add.image(0, 52 * scale, `characters/${kind}`).setOrigin(0.5, 1).setScale(0.8 * scale * ART_K);
     const name = this.add
       .text(0, 150 * scale, kind === 'boy' ? '男孩' : '女孩', {
         fontFamily: '"PingFang SC", system-ui, sans-serif',

@@ -210,6 +210,77 @@ export function registerProceduralTextures(scene: Phaser.Scene): void {
   });
 }
 
+/* ------------------------------------------------------------------ */
+/* 像素风精灵图                                                        */
+/* ------------------------------------------------------------------ */
+
+export const PIXEL_SHEET_KEY = 'characters/boy_walk';
+export const WALK_ANIM_KEY = 'boy-walk';
+export const PIXEL_FRAME_W = 32;
+export const PIXEL_FRAME_H = 48;
+export const PIXEL_FRAMES = 4;
+/** 双脚并拢的那一帧，用作站立姿势 */
+export const PIXEL_IDLE_FRAME = 1;
+
+/**
+ * 把横排像素精灵图（SVG）转换成"真·像素"贴图并逐帧切好。
+ * 做法：先按 4 倍渲染 SVG（此时 rect 边缘仍落在整像素上），
+ * 再取每个 4x4 色块的正中心像素，得到干净的 1x 像素图，杜绝抗锯齿造成的毛边。
+ * 最后把贴图过滤方式设为 NEAREST，游戏内整数倍放大时像素边缘保持锐利。
+ */
+export async function registerPixelSheet(
+  scene: Phaser.Scene,
+  key: string,
+  artKey: string,
+  frameW: number,
+  frameH: number,
+  frames: number,
+): Promise<boolean> {
+  if (scene.textures.exists(key)) return true;
+  try {
+    const img = await svgToImage(art(artKey).src);
+    const SS = 4;
+    const bigW = frameW * frames * SS;
+    const bigH = frameH * SS;
+    const big = document.createElement('canvas');
+    big.width = bigW;
+    big.height = bigH;
+    const bctx = big.getContext('2d');
+    if (!bctx) return false;
+    bctx.imageSmoothingEnabled = false;
+    bctx.drawImage(img, 0, 0, bigW, bigH);
+    const src = bctx.getImageData(0, 0, bigW, bigH).data;
+
+    const out = document.createElement('canvas');
+    out.width = frameW * frames;
+    out.height = frameH;
+    const octx = out.getContext('2d');
+    if (!octx) return false;
+    const outData = octx.createImageData(out.width, out.height);
+    const half = Math.floor(SS / 2);
+    for (let y = 0; y < out.height; y += 1) {
+      for (let x = 0; x < out.width; x += 1) {
+        const si = ((y * SS + half) * bigW + (x * SS + half)) * 4;
+        const di = (y * out.width + x) * 4;
+        outData.data[di] = src[si];
+        outData.data[di + 1] = src[si + 1];
+        outData.data[di + 2] = src[si + 2];
+        outData.data[di + 3] = src[si + 3];
+      }
+    }
+    octx.putImageData(outData, 0, 0);
+
+    const texture = scene.textures.addCanvas(key, out);
+    if (!texture) return false;
+    for (let i = 0; i < frames; i += 1) texture.add(i, 0, i * frameW, 0, frameW, frameH);
+    texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    return true;
+  } catch (err) {
+    console.warn(`[texture] 像素图 ${key} 生成失败`, err);
+    return false;
+  }
+}
+
 /** 世界里的显示尺寸（SVG 设计尺寸 × scale） */
 export const artSize = (key: string, scale: number): { w: number; h: number } => {
   const a = art(key);

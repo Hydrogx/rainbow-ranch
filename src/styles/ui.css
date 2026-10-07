@@ -851,6 +851,22 @@ body {
   width: auto;
 }
 
+/* 像素小男孩：32x48 的横排 4 帧，这里裁出第 2 帧（双脚并拢的站立帧） */
+.wardrobe-preview .pixel-layer {
+  display: block;
+  width: calc(230px * var(--ui-scale) * 0.6667);
+  overflow: hidden;
+}
+
+.wardrobe-preview .pixel-layer svg {
+  position: absolute;
+  left: -100%;
+  bottom: 0;
+  width: 400%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
 /* ---------------------------- 飘字 ---------------------------- */
 
 #toast-root {

@@ -54,6 +54,7 @@ export abstract class BaseWorldScene extends Phaser.Scene {
   private hintTimer = 0;
   private busy = false;
   private leaving = false;
+  private equipSignature = '';
 
   /* ------------------------------------------------------------------ */
   /* 世界构建                                                            */
@@ -70,6 +71,7 @@ export abstract class BaseWorldScene extends Phaser.Scene {
     this.current = undefined;
     this.busy = false;
     this.leaving = false;
+    this.equipSignature = '';
     this.hintTimer = 0;
     this.worldOpts = opts;
     registerProceduralTextures(this);
@@ -305,6 +307,12 @@ export abstract class BaseWorldScene extends Phaser.Scene {
   /* ------------------------------------------------------------------ */
 
   protected updateWorld(time: number, delta: number): void {
+    // 换装 / 换角色后立刻刷新主人公外观（在商店或换装间操作时就生效）
+    const equipSig = `${store.data.character}|${JSON.stringify(store.data.equipped)}`;
+    if (equipSig !== this.equipSignature) {
+      this.equipSignature = equipSig;
+      this.player.refreshEquipment();
+    }
     this.player.update(delta, this.keys);
     if (this.spaceKey && Phaser.Input.Keyboard.JustDown(this.spaceKey)) this.interactNearest();
     this.hintTimer -= delta;

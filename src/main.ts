@@ -165,6 +165,11 @@ const debugApi = {
     scene?.player?.setPosition(x, y);
     return true;
   },
+  setZoom: (z: number) => {
+    const scene = activeScene() as unknown as { cameras?: { main: { setZoom: (v: number) => void } } };
+    scene?.cameras?.main.setZoom(z);
+    return z;
+  },
   setTool: (tool: string) => {
     store.setTool(tool as never);
     return store.tool;

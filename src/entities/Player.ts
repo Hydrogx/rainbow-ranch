@@ -8,10 +8,22 @@ import Phaser from 'phaser';
 import { art } from '../assets';
 import { store } from '../game/GameState';
 import { DEPTH } from '../game/GameConfig';
-import { ART_K } from '../systems/TextureFactory';
+import {
+  ART_K,
+  PIXEL_FRAME_H,
+  PIXEL_IDLE_FRAME,
+  PIXEL_SHEET_KEY,
+  WALK_ANIM_KEY,
+} from '../systems/TextureFactory';
 
 export const PLAYER_SCALE = 0.86;
 const IMG = PLAYER_SCALE * ART_K;
+/** 像素小男孩的整数放大倍数：最近邻采样 + 整数倍放大，像素边缘不糊也不抖 */
+export const PIXEL_BOY_SCALE = 4;
+/** 矢量角色的实际显示高度：贴图是 2 倍栅格化，所以是 400 × 0.43 ≈ 172px */
+const VECTOR_H = 400 * IMG;
+/** 像素角色的实际显示高度：48 × 4 = 192px */
+const PIXEL_H = PIXEL_FRAME_H * PIXEL_BOY_SCALE;
 const BODY_W = 46;
 const BODY_H = 34;
 const SPEED = 235;
@@ -35,7 +47,7 @@ export class Player {
   view: Phaser.GameObjects.Container;
   shadow: Phaser.GameObjects.Ellipse;
 
-  private baseImage: Phaser.GameObjects.Image;
+  private baseSprite: Phaser.GameObjects.Sprite;
   private layers: Partial<Record<PlayerSlot, Phaser.GameObjects.Image>> = {};
   private target: Phaser.Math.Vector2 | null = null;
   private onArrive: (() => void) | null = null;
@@ -62,22 +74,43 @@ export class Player {
     this.shadow = scene.add.ellipse(x, y, 54, 20, 0x3b2a1d, 0.22).setDepth(DEPTH.sortedBase + y - 0.5);
 
     this.view = scene.add.container(x, y).setDepth(DEPTH.sortedBase + y);
-    this.baseImage = scene.add.image(0, 0, this.baseKey()).setOrigin(0.5, 1).setScale(IMG);
-    this.view.add(this.baseImage);
+    this.baseSprite = scene.add.sprite(0, 0, this.baseKey()).setOrigin(0.5, 1);
+    this.view.add(this.baseSprite);
+    this.applyBaseTransform();
     this.refreshEquipment();
   }
 
   private baseKey(): string {
+    if (this.usesPixelBoy()) return PIXEL_SHEET_KEY;
     return store.data.character === 'boy' ? 'characters/boy' : 'characters/girl';
+  }
+
+  /** 男孩使用像素行走图（如果贴图没准备好就退回矢量小人） */
+  private usesPixelBoy(): boolean {
+    return store.data.character === 'boy' && this.scene.textures.exists(PIXEL_SHEET_KEY);
+  }
+
+  private applyBaseTransform(): void {
+    this.baseSprite.setOrigin(0.5, 1);
+    if (this.usesPixelBoy()) {
+      this.baseSprite.setScale(PIXEL_BOY_SCALE);
+      this.baseSprite.setFrame(PIXEL_IDLE_FRAME);
+    } else {
+      this.baseSprite.setScale(IMG);
+    }
+  }
+
+  /** 装扮图层的缩放：像素小男孩比矢量角色略高，装扮同比例放大才能贴合 */
+  private overlayScale(): number {
+    return this.usesPixelBoy() ? IMG * (PIXEL_H / VECTOR_H) : IMG;
   }
 
   /** 换角色 / 换装扮后重建图层 */
   refreshEquipment(): void {
     const key = this.baseKey();
-    if (this.baseImage.texture.key !== key) {
-      this.baseImage.setTexture(key);
-      this.baseImage.setOrigin(0.5, 1).setScale(IMG);
-    }
+    if (this.baseSprite.texture.key !== key) this.baseSprite.setTexture(key);
+    this.applyBaseTransform();
+    const overlay = this.overlayScale();
     const order: PlayerSlot[] = ['backpack', 'top', 'shoes', 'hat', 'accessory'];
     for (const slot of order) {
       const itemId = store.data.equipped[slot];
@@ -92,17 +125,28 @@ export class Player {
       const textureKey = this.iconFor(itemId);
       if (existing) {
         if (existing.texture.key !== textureKey) existing.setTexture(textureKey);
-        existing.setOrigin(0.5, 1).setScale(IMG);
+        existing.setOrigin(0.5, 1).setScale(overlay);
         continue;
       }
-      const img = this.scene.add.image(0, 0, textureKey).setOrigin(0.5, 1).setScale(IMG);
+      const img = this.scene.add.image(0, 0, textureKey).setOrigin(0.5, 1).setScale(overlay);
       this.view.add(img);
       this.layers[slot] = img;
     }
-    // 保证背包在身体后面
-    if (this.layers.backpack) this.view.sendToBack(this.layers.backpack);
-    else this.view.sendToBack(this.baseImage);
-    if (this.layers.backpack) this.view.bringToTop(this.baseImage);
+    // 显式排好图层顺序：背包在最底下，然后是身体，再叠上衣 / 鞋 / 帽子 / 发饰
+    const sequence: Array<Phaser.GameObjects.GameObject | undefined> = [
+      this.layers.backpack,
+      this.baseSprite,
+      this.layers.top,
+      this.layers.shoes,
+      this.layers.hat,
+      this.layers.accessory,
+    ];
+    let depth = 0;
+    sequence.forEach((obj) => {
+      if (!obj) return;
+      this.view.moveTo(obj, depth);
+      depth += 1;
+    });
   }
 
   private iconFor(itemId: string): string {
@@ -205,18 +249,32 @@ export class Player {
     this.moving = speedNow > 12;
     this.animT += dt * (this.moving ? 0.014 : 0.003);
 
-    const hop = this.moving ? Math.abs(Math.sin(this.animT)) * 5 : Math.sin(this.animT) * 1.5;
-    const tilt = this.moving ? Math.sin(this.animT) * 2.2 : Math.sin(this.animT * 0.6) * 0.6;
+    const pixel = this.usesPixelBoy();
+    // 像素角色不做程序化的上下弹跳与旋转，否则会破坏像素网格
+    const hop = pixel ? 0 : this.moving ? Math.abs(Math.sin(this.animT)) * 5 : Math.sin(this.animT) * 1.5;
+    const tilt = pixel ? 0 : this.moving ? Math.sin(this.animT) * 2.2 : Math.sin(this.animT * 0.6) * 0.6;
 
     this.view.setPosition(this.body.x, this.body.y - hop);
     this.view.setScale(this.facing, 1);
     this.view.setAngle(tilt);
+    this.animateBody(this.moving, pixel);
     this.view.setDepth(DEPTH.sortedBase + this.body.y);
     this.shadow.setPosition(this.body.x, this.body.y);
     this.shadow.setDepth(DEPTH.sortedBase + this.body.y - 0.5);
     const squash = this.moving ? 1 : 1 + Math.sin(this.animT) * 0.012;
     this.shadow.setScale(squash, squash);
     this.shadow.setAlpha(this.moving ? 0.18 : 0.22);
+  }
+
+  /** 走路时循环播放 4 帧行走动画，停下时回到"双脚并拢"的站立帧 */
+  private animateBody(moving: boolean, pixel: boolean): void {
+    if (!pixel) return;
+    if (moving) {
+      if (!this.baseSprite.anims.isPlaying) this.baseSprite.play(WALK_ANIM_KEY);
+      return;
+    }
+    if (this.baseSprite.anims.isPlaying) this.baseSprite.anims.stop();
+    if (this.baseSprite.frame.name !== String(PIXEL_IDLE_FRAME)) this.baseSprite.setFrame(PIXEL_IDLE_FRAME);
   }
 
   /* ------------------------------------------------------------------ */
@@ -305,7 +363,9 @@ export class Player {
       case 'plant':
       case 'harvest':
       case 'pickup': {
-        scene.tweens.add({ targets: this.view, scaleY: 0.92, duration: 130, yoyo: true, repeat: 1 });
+        if (!this.usesPixelBoy()) {
+          scene.tweens.add({ targets: this.view, scaleY: 0.92, duration: 130, yoyo: true, repeat: 1 });
+        }
         if (kind !== 'plant') {
           const sparks = scene.add.particles(this.body.x, this.body.y - 100, 'tex/spark', {
             speed: { min: 40, max: 120 },
