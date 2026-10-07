@@ -7,7 +7,7 @@ import { bus, EV } from '../game/EventBus';
 import { store } from '../game/GameState';
 import type { ToolId } from '../game/types';
 import { audio } from '../systems/AudioSystem';
-import { badge, el, icon, rawSvg } from './dom';
+import { badge, charIcon, el, icon, rawSvg } from './dom';
 
 interface ToolDef {
   id: ToolId;
@@ -74,6 +74,7 @@ export class Hud {
       <div class="pill" id="pill-coin">${icon('ui/coin', 30)}<b>0</b></div>
       <div class="pill" id="pill-star">${icon('ui/rainbow_star', 30)}<b>0</b></div>
       <div class="spacer"></div>
+      <button class="hud-btn gender-btn-hud" id="btn-gender" title="切换男孩 / 女孩">${charIcon('girl', 44)}</button>
       <button class="hud-btn" id="btn-orders" title="客人订单">${icon('ui/order', 40)}</button>
       <button class="hud-btn" id="btn-bag" title="背包">${icon('ui/bag', 40)}</button>
       <button class="hud-btn" id="btn-wardrobe" title="换装">${icon('characters/hat_straw', 40)}</button>
@@ -115,6 +116,12 @@ export class Hud {
   }
 
   private bind(): void {
+    this.hud.querySelector('#btn-gender')?.addEventListener('click', () => {
+      const next = store.data.character === 'boy' ? 'girl' : 'boy';
+      store.chooseCharacter(next);
+      audio.play('pop');
+      this.toast('ui/heart', next === 'boy' ? '换成小男孩啦！' : '换成小女孩啦！');
+    });
     this.hud.querySelector('#btn-orders')?.addEventListener('click', () => {
       audio.play('click');
       bus.emit(EV.openPanel, { name: 'orders' });
@@ -282,6 +289,13 @@ export class Hud {
       this.starsEl.textContent = String(stars);
       if (this.lastStars >= 0 && stars !== this.lastStars) this.bump(this.starsEl.parentElement as HTMLElement);
       this.lastStars = stars;
+    }
+
+    const genderBtn = this.hud.querySelector('#btn-gender') as HTMLElement | null;
+    if (genderBtn && genderBtn.dataset.kind !== data.character) {
+      genderBtn.dataset.kind = data.character;
+      genderBtn.innerHTML = charIcon(data.character === 'girl' ? 'girl' : 'boy', 44);
+      genderBtn.title = data.character === 'girl' ? '现在是女孩，点一下换成男孩' : '现在是男孩，点一下换成女孩';
     }
 
     const deliverable = data.orders.filter((o) => store.hasAll(o.request)).length;

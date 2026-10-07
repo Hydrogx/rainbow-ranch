@@ -868,8 +868,8 @@ body {
   image-rendering: pixelated;
 }
 
-/* 订单头像：裁出站立图的第一帧 */
-.avatar .sheet-crop {
+/* 像素站立图裁切：只显示第一帧（订单头像 / 性别按钮共用） */
+.sheet-crop {
   position: absolute;
   bottom: 0;
   left: 50%;
@@ -880,13 +880,56 @@ body {
   display: block;
 }
 
-.avatar .sheet-crop svg {
+.sheet-crop svg {
   position: absolute;
   left: 0;
   bottom: 0;
   height: 100%;
   width: calc(100% * var(--frames, 1));
   image-rendering: pixelated;
+}
+
+.char-ico {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 男孩 / 女孩切换 */
+.gender-btn-hud {
+  background: linear-gradient(180deg, #fff6d9, #ffe6a8);
+}
+
+.gender-switch {
+  flex: 0 0 auto;
+  display: flex;
+  gap: calc(10px * var(--ui-scale));
+}
+
+.gender-btn {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8px * var(--ui-scale));
+  padding: calc(8px * var(--ui-scale)) calc(14px * var(--ui-scale));
+  border: calc(4px * var(--ui-scale)) solid var(--ink);
+  border-radius: calc(20px * var(--ui-scale));
+  background: #fff;
+  font-family: var(--font);
+  font-size: calc(22px * var(--ui-scale));
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.gender-btn.active {
+  background: var(--green);
+  box-shadow: inset 0 0 0 calc(3px * var(--ui-scale)) rgba(90, 61, 46, 0.35);
+}
+
+.gender-btn:active {
+  transform: translateY(calc(2px * var(--ui-scale)));
 }
 
 /* ---------------------------- 飘字 ---------------------------- */

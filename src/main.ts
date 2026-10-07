@@ -170,6 +170,11 @@ const debugApi = {
     scene?.cameras?.main.setZoom(z);
     return z;
   },
+  switchCharacter: (kind?: 'boy' | 'girl') => {
+    const next = kind ?? (store.data.character === 'boy' ? 'girl' : 'boy');
+    store.chooseCharacter(next);
+    return store.data.character;
+  },
   setTool: (tool: string) => {
     store.setTool(tool as never);
     return store.tool;

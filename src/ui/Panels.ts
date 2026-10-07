@@ -6,7 +6,7 @@ import { CROPS, ITEMS, RECIPES, SHOP_CATEGORIES, customerById, itemDef, recipeBy
 import { bus, EV } from '../game/EventBus';
 import { store } from '../game/GameState';
 import { audio } from '../systems/AudioSystem';
-import { el, icon, rawSvg } from './dom';
+import { charIcon, el, icon, rawSvg } from './dom';
 import { Hud } from './Hud';
 
 type PanelName = 'shop' | 'bag' | 'wardrobe' | 'kitchen' | 'orders' | 'settings' | 'sleep';
@@ -204,6 +204,24 @@ export class Panels {
   /* ================================================================== */
 
   private renderWardrobe(body: HTMLElement): void {
+    // 男孩 / 女孩切换
+    const current = store.data.character === 'girl' ? 'girl' : 'boy';
+    const picker = el('div', 'gender-switch');
+    (['boy', 'girl'] as const).forEach((kind) => {
+      const btn = el('button', `gender-btn${current === kind ? ' active' : ''}`);
+      btn.id = `gender-${kind}`;
+      btn.innerHTML = `${charIcon(kind, 44)}<span>${kind === 'boy' ? '小男孩' : '小女孩'}</span>`;
+      btn.addEventListener('click', () => {
+        if (store.data.character === kind) return;
+        store.chooseCharacter(kind);
+        audio.play('pop');
+        this.hud.toast('ui/heart', kind === 'boy' ? '换成小男孩啦！' : '换成小女孩啦！');
+        this.render();
+      });
+      picker.appendChild(btn);
+    });
+    body.appendChild(picker);
+
     const preview = el('div', 'wardrobe-preview');
     preview.innerHTML = Hud.wardrobePreview();
     body.appendChild(preview);

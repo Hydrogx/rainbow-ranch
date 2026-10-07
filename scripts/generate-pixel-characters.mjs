@@ -250,7 +250,8 @@ const C = {
   straw: '#f2c879',
   strawHi: '#ffdf9e',
   band: '#e05a6b',
-  oldStraw: '#c2a06a',
+  oldStraw: '#c9a86a',
+  oldStrawHi: '#e0c48c',
   oldStrawDk: '#8f7342',
   rag: '#cfc6ad',
   ragDk: '#a89c82',
@@ -294,12 +295,17 @@ const BODY = { headTop: 4, torsoTop: 24, waistTop: 33, legTop: 36, footTop: 41 }
 
 /** 破破烂烂的草帽：帽檐缺了两块 */
 clothes['ragged_hat'] = [
-  shape(C.ink, [[8, 2, 16, 1], [7, 3, 1, 6], [24, 3, 1, 6], [3, 9, 5, 1], [12, 9, 8, 1], [24, 9, 5, 1],
-                [3, 12, 4, 1], [11, 12, 10, 1], [25, 12, 4, 1]]),
-  shape(C.oldStrawDk, [[8, 3, 16, 6]]),
-  shape(C.oldStraw, [[9, 4, 14, 4]]),
-  shape(C.oldStrawDk, [[4, 10, 6, 2], [14, 10, 4, 2], [22, 10, 6, 2]]),
-  shape(C.oldStraw, [[5, 10, 4, 1], [15, 10, 2, 1], [23, 10, 4, 1]]),
+  // 帽顶（窄一些、塌一边，显得破）
+  shape(C.ink, [[10, 2, 11, 1], [9, 3, 1, 6], [21, 3, 1, 4], [22, 7, 1, 2]]),
+  shape(C.oldStrawDk, [[10, 3, 11, 6]]),
+  shape(C.oldStraw, [[11, 4, 9, 3]]),
+  shape(C.oldStrawHi, [[12, 4, 4, 1]]),
+  // 帽檐：缺了两块
+  shape(C.ink, [[2, 9, 6, 1], [13, 9, 5, 1], [24, 9, 6, 1], [2, 12, 5, 1], [12, 12, 8, 1], [25, 12, 5, 1]]),
+  shape(C.oldStraw, [[3, 10, 25, 2]]),
+  shape(C.oldStrawDk, [[3, 11, 10, 1], [16, 11, 12, 1]]),
+  // 破洞
+  shape(C.ink, [[14, 4, 2, 2]]),
 ].join('\n');
 
 /** 破衣服：下摆参差、有补丁和破洞 */

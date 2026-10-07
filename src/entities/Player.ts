@@ -56,6 +56,7 @@ export class Player {
   private frozen = false;
   private stuckFor = 0;
   private actionLock: { action: CharAction; until: number } | null = null;
+  private currentKind: CharKind = 'boy';
   private sustained: CharAction | null = null;
   currentAction: CharAction = 'idle';
 
@@ -78,6 +79,7 @@ export class Player {
 
     this.view = scene.add.container(x, y).setDepth(DEPTH.sortedBase + y);
     this.equipLayer = scene.add.container(0, 0);
+    this.currentKind = this.kind();
     this.baseSprite = scene.add.sprite(0, 0, this.baseSheet('idle'), 0).setOrigin(0.5, 1);
     this.view.add([this.baseSprite, this.equipLayer]);
     this.applyBodyScale();
@@ -213,6 +215,14 @@ export class Player {
   /** 每帧决定当前应该播哪个动作 */
   private updateAction(moving: boolean): void {
     if (!this.hasSheets()) return;
+    // 玩家在游戏里切换了男孩 / 女孩：动作动画要换成另一套，强制重播一次
+    if (this.currentKind !== this.kind()) {
+      this.currentKind = this.kind();
+      this.currentAction = 'idle';
+      this.actionLock = null;
+      this.baseSprite.anims.stop();
+      this.baseSprite.setTexture(this.baseSheet('idle'), 0);
+    }
     const now = this.scene.time.now;
     if (this.actionLock && now >= this.actionLock.until) this.actionLock = null;
     let want: CharAction;

@@ -590,6 +590,48 @@ async function main() {
     await sleep(400);
   });
 
+  await step('切换男孩 / 女孩按钮', async () => {
+    await call('resetSave', 'girl');
+    await sleep(2400);
+    await shot('22-hud');
+    const before = await page.evaluate(() => window.__RANCH__.store.data.character);
+    await clickSel('#btn-gender');
+    await sleep(900);
+    const after = await page.evaluate(() => {
+      const sc = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+      return { character: window.__RANCH__.store.data.character, texture: sc.player.baseSprite.texture.key, action: sc.player.currentAction };
+    });
+    console.log(`   顶部一键切换: ${before} → ${after.character}（贴图 ${after.texture}，动作 ${after.action}）`);
+    if (after.character === before) errors.push('[性别] 顶部按钮没有切换角色');
+    if (!String(after.texture).startsWith(`characters/${after.character}_`)) errors.push(`[性别] 切换后贴图不对：${after.texture}`);
+    await shot('22b-gender-boy');
+    // 换装间里的明确选择
+    await call('openPanel', 'wardrobe');
+    await sleep(800);
+    await shot('22c-wardrobe-gender');
+    await clickSel('#gender-girl');
+    await sleep(800);
+    const back = await page.evaluate(() => {
+      const sc = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+      return { character: window.__RANCH__.store.data.character, texture: sc.player.baseSprite.texture.key };
+    });
+    console.log(`   换装间选择女孩: → ${back.character}（贴图 ${back.texture}）`);
+    if (back.character !== 'girl') errors.push('[性别] 换装间的女孩按钮无效');
+    await shot('22d-gender-girl');
+    await call('closePanel');
+    await sleep(400);
+    // 切换后走路动画也要换成另一套
+    await page.keyboard.down('ArrowLeft');
+    await sleep(600);
+    await page.keyboard.up('ArrowLeft');
+    const walk = await page.evaluate(() => {
+      const sc = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+      return sc.player.baseSprite.anims.currentAnim ? sc.player.baseSprite.anims.currentAnim.key : null;
+    });
+    console.log(`   女孩走路动画: ${walk}`);
+    if (walk !== 'girl-walk' && walk !== 'girl-idle') errors.push(`[性别] 女孩的动画不对：${walk}`);
+  });
+
   await browser.close();
   server.close();
   reportWarnings(warnings, errors);
