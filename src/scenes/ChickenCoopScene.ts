@@ -46,8 +46,8 @@ export class ChickenCoopScene extends BaseWorldScene {
 
     this.addInteractable({
       id: 'exit',
-      x: 750,
-      y: 1070,
+      x: 180,
+      y: 1010,
       radius: 150,
       icon: 'ui/hand',
       label: '回到牧场',

@@ -142,6 +142,17 @@ async function main() {
 
   const call = (name, ...args) => page.evaluate((n, a) => window.__RANCH__[n](...a), name, args);
 
+  /** 按游戏内坐标（1280x720 设计分辨率）点击 canvas */
+  const clickGame = async (gx, gy, wait = 500) => {
+    const box = await page.evaluate(() => {
+      const c = document.querySelector('#game-root canvas');
+      const r = c.getBoundingClientRect();
+      return { x: r.x, y: r.y, w: r.width, h: r.height };
+    });
+    await page.mouse.click(box.x + (gx / 1280) * box.w, box.y + (gy / 720) * box.h);
+    await sleep(wait);
+  };
+
   const clickSel = async (sel, wait = 420) => {
     await page.waitForSelector(sel, { visible: true, timeout: 8000 });
     await page.click(sel);
@@ -272,6 +283,49 @@ async function main() {
     console.log(`   捡到 ${n} 个鸡蛋`);
     await sleep(1200);
     await shot('04b-coop-after');
+  });
+
+  await step('牛棚：挤牛奶节奏小游戏（真实点击左右按钮）', async () => {
+    await call('readyAllProduce');
+    await call('gotoScene', 'Barn');
+    await sleep(2400);
+    await shot('17-barn');
+    await call('teleport', 680, 520);
+    await sleep(600);
+    await call('interactNearest');
+    await sleep(1200);
+    await shot('17b-milking');
+    const milkBefore = await page.evaluate(() => window.__RANCH__.store.count('milk'));
+    for (let i = 0; i < 9; i += 1) {
+      await clickGame(i % 2 === 0 ? 170 : 1110, 470, 340);
+      if (i === 3) await shot('17c-milking-half');
+    }
+    await sleep(900);
+    await shot('17d-milking-done');
+    const milkAfter = await page.evaluate(() => window.__RANCH__.store.count('milk'));
+    console.log(`   挤奶前 ${milkBefore} 瓶 → 挤奶后 ${milkAfter} 瓶`);
+    if (milkAfter <= milkBefore) errors.push('[牛棚] 挤奶后牛奶数量没有增加');
+  });
+
+  await step('回小屋睡一觉到第二天', async () => {
+    await call('gotoScene', 'Ranch');
+    await sleep(1800);
+    await call('teleport', 320, 760);
+    await sleep(700);
+    const dayBefore = await page.evaluate(() => window.__RANCH__.store.data.day);
+    await call('openPanel', 'sleep');
+    await sleep(800);
+    await shot('18-sleep');
+    await page.evaluate(() => {
+      const btns = [...document.querySelectorAll('.cook-actions .big-btn')];
+      const yes = btns.find((b) => b.textContent.includes('睡一觉'));
+      if (yes) yes.click();
+    });
+    await sleep(1800);
+    await shot('18b-new-day');
+    const dayAfter = await page.evaluate(() => window.__RANCH__.store.data.day);
+    console.log(`   第 ${dayBefore} 天 → 第 ${dayAfter} 天`);
+    if (dayAfter <= dayBefore) errors.push('[睡觉] 睡一觉之后天数没有增加');
   });
 
   await step('菜地：播种 → 浇水 → 长大 → 收获', async () => {

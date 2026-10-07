@@ -1,6 +1,9 @@
 /**
  * 牛棚挤牛奶场景（PRD 第 4.4 节）
  * 按屏幕提示依次点击左右按钮，节奏正确会得到更多牛奶；点错也没有惩罚，一样有基础牛奶。
+ *
+ * 场景大小刚好等于设计分辨率（1280x720），相机不会滚动，
+ * 界面按钮因此可以稳定地接收点击。
  */
 import Phaser from 'phaser';
 import { BaseWorldScene } from '../game/BaseWorldScene';
@@ -13,6 +16,8 @@ import { ART_K, makeCanvasTexture } from '../systems/TextureFactory';
 type Dir = 'left' | 'right';
 
 const STEPS = 8;
+const COW = { x: 500, y: 470 };
+const CX = 640;
 
 export class BarnScene extends BaseWorldScene {
   private cow!: Phaser.GameObjects.Image;
@@ -44,35 +49,36 @@ export class BarnScene extends BaseWorldScene {
 
   create(): void {
     bus.emit('ui:scene', 'Barn');
-    this.createWorld({ width: 1300, height: 900, ground: 'straw', indoor: true, playerStart: { x: 650, y: 790 } });
+    this.createWorld({ width: 1280, height: 720, ground: 'straw', indoor: true, playerStart: { x: 800, y: 600 } });
 
     this.makeArrowTextures();
     this.buildBarn();
 
-    this.cow = this.add.image(700, 500, 'animals/cow').setOrigin(0.5, 1).setScale(0.95 * ART_K).setDepth(DEPTH.sortedBase + 500);
-    this.cowShadow = this.add.ellipse(700, 500, 210, 40, 0x3b2a1d, 0.18).setDepth(DEPTH.sortedBase + 498);
+    this.cowShadow = this.add.ellipse(COW.x, COW.y, 300, 56, 0x3b2a1d, 0.18).setDepth(DEPTH.sortedBase + COW.y - 1);
+    this.cow = this.add.image(COW.x, COW.y, 'animals/cow').setOrigin(0.5, 1).setScale(1.9 * ART_K).setDepth(DEPTH.sortedBase + COW.y);
     this.bucket = this.add
-      .image(700, 640, 'props/milk_pail')
+      .image(COW.x, COW.y + 150, 'props/milk_pail')
       .setOrigin(0.5, 1)
-      .setScale(0.85 * ART_K)
-      .setDepth(DEPTH.sortedBase + 640);
-    this.tweens.add({ targets: this.cow, scaleY: 0.94, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      .setScale(1.5 * ART_K)
+      .setDepth(DEPTH.sortedBase + COW.y + 150);
+    this.tweens.add({ targets: this.cow, scaleY: 1.9 * ART_K * 0.97, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
 
     this.addInteractable({
       id: 'milking',
-      x: 700,
-      y: 560,
-      radius: 190,
+      x: COW.x,
+      y: COW.y - 20,
+      radius: 230,
       icon: 'ui/bucket',
       label: '给小牛挤奶',
+      hintOffsetY: 150,
       action: () => this.startMilking(),
     });
 
     this.addInteractable({
       id: 'exit',
-      x: 650,
-      y: 880,
-      radius: 140,
+      x: 130,
+      y: 600,
+      radius: 170,
       icon: 'ui/hand',
       label: '回到牧场',
       action: () => {
@@ -84,28 +90,30 @@ export class BarnScene extends BaseWorldScene {
 
     this.buildMinigameUi();
     this.updateStatus();
-    this.time.delayedCall(500, () => bus.emit(EV.hint, this.cowData()?.produceReady ? '走到奶糖身边，按空格或点它开始挤奶！' : '奶糖还在休息，等一会儿再来吧'));
+    this.time.delayedCall(500, () =>
+      bus.emit(EV.hint, this.cowData()?.produceReady ? '走到奶糖身边，按空格或点它开始挤奶！' : '奶糖还在休息，等一会儿再来吧'),
+    );
   }
 
   private buildBarn(): void {
     const hays: Array<[number, number, number]> = [
-      [160, 240, 0.9], [320, 200, 0.7], [1080, 230, 0.9], [1180, 350, 0.7], [140, 700, 0.8], [1180, 720, 0.8],
+      [130, 330, 0.9], [290, 270, 0.7], [1130, 320, 0.9], [1210, 440, 0.7], [110, 620, 0.8],
     ];
     hays.forEach(([x, y, s]) => this.addArt('props/haypile', x, y, s));
-    this.addArt('props/crate', 250, 470, 0.8);
-    this.addArt('props/crate', 1080, 500, 0.8);
+    this.addArt('props/crate', 250, 500, 0.8);
+    this.addArt('props/crate', 1060, 520, 0.8);
     this.addArt('props/bell', 900, 300, 0.7);
-    this.addArt('props/water_trough', 1060, 780, 0.9);
+    this.addArt('props/water_trough', 1080, 690, 0.9);
 
-    this.add.rectangle(0, 0, 1300, 70, 0x8a5a30, 0.92).setOrigin(0, 0).setDepth(DEPTH.overhead + 20);
-    for (let x = 90; x < 1300; x += 200) {
+    this.add.rectangle(0, 0, 1280, 70, 0x8a5a30, 0.92).setOrigin(0, 0).setDepth(DEPTH.overhead + 20);
+    for (let x = 90; x < 1280; x += 200) {
       this.add.rectangle(x, 0, 24, 76, 0x6f4523, 0.85).setOrigin(0, 0).setDepth(DEPTH.overhead + 19);
     }
     const g = this.add.graphics().setDepth(DEPTH.path);
     for (let i = 0; i < 50; i += 1) {
       g.fillStyle(i % 2 ? 0xe6c98d : 0xd9b779, 0.55).fillEllipse(
-        Phaser.Math.Between(80, 1220),
-        Phaser.Math.Between(110, 830),
+        Phaser.Math.Between(80, 1200),
+        Phaser.Math.Between(110, 700),
         Phaser.Math.Between(50, 130),
         Phaser.Math.Between(16, 34),
       );
@@ -148,10 +156,8 @@ export class BarnScene extends BaseWorldScene {
   /* ------------------------------------------------------------------ */
 
   private buildMinigameUi(): void {
-    const cx = 640;
-
     this.statusText = this.add
-      .text(cx, 120, '', {
+      .text(CX, 268, '', {
         fontFamily: '"PingFang SC", system-ui, sans-serif',
         fontSize: '26px',
         color: '#3b2a1d',
@@ -159,15 +165,14 @@ export class BarnScene extends BaseWorldScene {
         padding: { left: 18, right: 18, top: 6, bottom: 6 },
       })
       .setOrigin(0.5)
-      .setScrollFactor(0)
       .setDepth(DEPTH.ui)
       .setVisible(false);
 
     for (let i = 0; i < STEPS; i += 1) {
-      const x = cx - ((STEPS - 1) * 74) / 2 + i * 74;
+      const x = CX - ((STEPS - 1) * 74) / 2 + i * 74;
       const box = this.add.rectangle(0, 0, 62, 62, 0xfffdf5, 0.9).setStrokeStyle(4, 0x5a3d2e, 0.7);
       const arrow = this.add.image(0, 0, 'tex/arrow_left').setScale(0.55);
-      const container = this.add.container(x, 190, [box, arrow]).setScrollFactor(0).setDepth(DEPTH.ui).setVisible(false);
+      const container = this.add.container(x, 150, [box, arrow]).setDepth(DEPTH.ui).setVisible(false);
       container.setData('arrow', arrow);
       container.setData('box', box);
       this.slots.push(container);
@@ -177,25 +182,25 @@ export class BarnScene extends BaseWorldScene {
       const bg = this.add.circle(0, 0, 74, dir === 'left' ? 0x9ed8f5 : 0xffd9e7).setStrokeStyle(7, 0x5a3d2e, 0.9);
       const arrow = this.add.image(0, 0, dir === 'left' ? 'tex/arrow_left' : 'tex/arrow_right').setScale(0.9);
       const label = this.add
-        .text(0, 96, dir === 'left' ? '左边' : '右边', { fontFamily: '"PingFang SC", system-ui, sans-serif', fontSize: '22px', color: '#3b2a1d' })
+        .text(0, -110, dir === 'left' ? '左边' : '右边', { fontFamily: '"PingFang SC", system-ui, sans-serif', fontSize: '24px', color: '#3b2a1d' })
         .setOrigin(0.5);
-      const container = this.add.container(x, 640, [bg, arrow, label]).setScrollFactor(0).setDepth(DEPTH.ui).setVisible(false);
+      const container = this.add.container(x, 470, [bg, arrow, label]).setDepth(DEPTH.ui).setVisible(false);
       bg.setInteractive({ useHandCursor: true });
       bg.on('pointerdown', () => this.press(dir));
       this.buttons.push(container);
     };
-    mkButton(cx - 190, 'left');
-    mkButton(cx + 190, 'right');
+    mkButton(170, 'left');
+    mkButton(1110, 'right');
 
-    this.progressBar = this.add.graphics().setScrollFactor(0).setDepth(DEPTH.ui).setVisible(false);
+    this.progressBar = this.add.graphics().setDepth(DEPTH.ui).setVisible(false);
   }
 
   private drawProgress(): void {
     const filled = this.getFilled();
     this.progressBar.clear();
-    this.progressBar.fillStyle(0xfffdf5, 0.92).fillRoundedRect(640 - 190, 250, 380, 30, 15);
-    this.progressBar.fillStyle(0x9ed8f5, 1).fillRoundedRect(640 - 186, 254, Math.max(0, 372 * filled), 22, 11);
-    this.progressBar.lineStyle(5, 0x5a3d2e, 0.8).strokeRoundedRect(640 - 190, 250, 380, 30, 15);
+    this.progressBar.fillStyle(0xfffdf5, 0.92).fillRoundedRect(CX - 190, 206, 380, 30, 15);
+    this.progressBar.fillStyle(0x9ed8f5, 1).fillRoundedRect(CX - 186, 210, Math.max(0, 372 * filled), 22, 11);
+    this.progressBar.lineStyle(5, 0x5a3d2e, 0.8).strokeRoundedRect(CX - 190, 206, 380, 30, 15);
   }
 
   private getFilled(): number {
@@ -208,7 +213,7 @@ export class BarnScene extends BaseWorldScene {
     if (!cow) return;
     if (this.playing) return;
     if (this.finished) {
-      this.statusText.setText('今天已经挤过啦，明天再来吧～');
+      this.statusText.setVisible(true).setText('今天已经挤过啦，明天再来吧～');
       return;
     }
     if (!cow.produceReady) {
@@ -259,14 +264,14 @@ export class BarnScene extends BaseWorldScene {
       this.floatText(this.player.x, this.player.y - 150, '没关系～', '#b1553f');
     }
     this.step += 1;
-    this.bucket.setScale((0.85 + this.getFilled() * 0.16) * ART_K);
+    this.bucket.setScale((1.5 + this.getFilled() * 0.35) * ART_K);
     this.refreshSlots();
     this.drawProgress();
     if (this.step >= this.sequence.length) this.finishMilking();
   }
 
   private splashMilk(): void {
-    const emitter = this.add.particles(700, 560, 'tex/dot', {
+    const emitter = this.add.particles(COW.x, COW.y + 70, 'tex/dot', {
       speedY: { min: 120, max: 260 },
       speedX: { min: -70, max: 70 },
       scale: { start: 0.4, end: 0.05 },
@@ -304,7 +309,7 @@ export class BarnScene extends BaseWorldScene {
     this.buttons.forEach((b) => b.setVisible(false));
     this.player.freeze(false);
 
-    const hearts = this.add.particles(700, 420, 'ui/heart', {
+    const hearts = this.add.particles(COW.x, COW.y - 120, 'ui/heart', {
       speedY: { min: -110, max: -50 },
       speedX: { min: -60, max: 60 },
       scale: { start: 0.55 * ART_K, end: 0.1 * ART_K },
@@ -318,7 +323,7 @@ export class BarnScene extends BaseWorldScene {
       hearts.stop();
       this.time.delayedCall(1200, () => hearts.destroy());
     });
-    this.sparkle(700, 470, 0xfff0b8, 16);
+    this.sparkle(COW.x, COW.y - 40, 0xfff0b8, 16);
     this.player.playAction('cheer');
     this.updateStatus();
   }

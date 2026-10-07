@@ -185,6 +185,23 @@ export abstract class BaseWorldScene extends Phaser.Scene {
       }
     }
     const world = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+
+    // 点到交互对象附近也算互动（平板上小朋友直接戳就行）
+    let best: Interactable | undefined;
+    let bestDist = Infinity;
+    for (const item of this.interactables) {
+      if (item.enabled && !item.enabled()) continue;
+      const d = Phaser.Math.Distance.Between(world.x, world.y, item.x, item.y);
+      if (d < item.radius * 0.85 && d < bestDist) {
+        best = item;
+        bestDist = d;
+      }
+    }
+    if (best) {
+      this.walkThenInteract(best);
+      return;
+    }
+
     if (this.isWalkable(world.x, world.y)) {
       this.player.moveTo(world.x, world.y);
     }
