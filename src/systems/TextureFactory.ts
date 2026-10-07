@@ -4,6 +4,8 @@
  */
 import Phaser from 'phaser';
 import { ART, art } from '../assets';
+import { CHAR_ACTIONS, CHAR_ACTION_ORDER, type CharAction } from '../data/characterFrames';
+import { ANIMAL_ACTIONS, ANIMAL_ACTION_ORDER, type AnimalAction } from '../data/animalFrames';
 
 /** 栅格化倍率：2 倍，保证高分屏和高缩放时依然清晰 */
 const RATIO = 2;
@@ -211,37 +213,103 @@ export function registerProceduralTextures(scene: Phaser.Scene): void {
 }
 
 /* ------------------------------------------------------------------ */
-/* 像素风精灵图                                                        */
+/* 精灵图：角色动作 / 服装 / 动物动作                                    */
 /* ------------------------------------------------------------------ */
 
-export const PIXEL_SHEET_KEY = 'characters/boy_walk';
-export const WALK_ANIM_KEY = 'boy-walk';
-export const PIXEL_FRAME_W = 32;
-export const PIXEL_FRAME_H = 48;
-export const PIXEL_FRAMES = 4;
-/** 双脚并拢的那一帧，用作站立姿势 */
-export const PIXEL_IDLE_FRAME = 1;
+export const CHAR_KINDS = ['boy', 'girl'] as const;
+export type CharKind = (typeof CHAR_KINDS)[number];
+
+/** 全部像素服装图层（32x48 单帧） */
+export const CLOTHING_KEYS = [
+  'ragged_hat',
+  'ragged_shirt',
+  'ragged_pants',
+  'hat_straw',
+  'hat_rain',
+  'hat_chef',
+  'ears',
+  'hairpin',
+  'scarf',
+  'overalls',
+  'raincoat',
+  'pants_denim',
+  'pants_rain',
+  'boots',
+  'sneakers',
+  'backpack',
+] as const;
+
+export const ANIMAL_SPECIES = ['chicken', 'sheep', 'cow'] as const;
+export type AnimalSpecies = (typeof ANIMAL_SPECIES)[number];
+
+/** 动物单帧设计尺寸（与 SVG viewBox 一致） */
+export const ANIMAL_SIZE: Record<AnimalSpecies, { w: number; h: number }> = {
+  chicken: { w: 160, h: 160 },
+  sheep: { w: 190, h: 170 },
+  cow: { w: 220, h: 170 },
+};
+
+export const CHAR_FRAME_W = 32;
+export const CHAR_FRAME_H = 48;
+/** 像素角色的整数放大倍数：最近邻采样 + 整数倍，像素边缘锐利不抖 */
+export const PIXEL_SCALE = 4;
+
+export interface SheetDef {
+  key: string;
+  frameW: number;
+  frameH: number;
+  frames: number;
+  /** true = 像素图（取色块中心 + NEAREST），false = 矢量图（2 倍栅格化 + 平滑） */
+  pixel: boolean;
+}
+
+export const characterSheetKey = (kind: CharKind, action: CharAction) => `characters/${kind}_${action}`;
+export const characterAnimKey = (kind: CharKind, action: CharAction) => `${kind}-${action}`;
+export const animalSheetKey = (species: AnimalSpecies, action: AnimalAction) => `animals/${species}_${action}`;
+export const animalAnimKey = (species: AnimalSpecies, action: AnimalAction) => `${species}-${action}`;
+
+export function allSheetDefs(): SheetDef[] {
+  const out: SheetDef[] = [];
+  for (const kind of CHAR_KINDS) {
+    for (const action of CHAR_ACTION_ORDER) {
+      out.push({ key: characterSheetKey(kind, action), frameW: CHAR_FRAME_W, frameH: CHAR_FRAME_H, frames: CHAR_ACTIONS[action].frames, pixel: true });
+    }
+  }
+  for (const key of CLOTHING_KEYS) {
+    out.push({ key: `characters/${key}`, frameW: CHAR_FRAME_W, frameH: CHAR_FRAME_H, frames: 1, pixel: true });
+  }
+  for (const species of ANIMAL_SPECIES) {
+    for (const action of ANIMAL_ACTION_ORDER) {
+      const def = ANIMAL_ACTIONS[species][action];
+      out.push({ key: animalSheetKey(species, action), frameW: ANIMAL_SIZE[species].w, frameH: ANIMAL_SIZE[species].h, frames: def.frames, pixel: false });
+    }
+  }
+  return out;
+}
+
+/** 需要在普通 SVG 注册里排除掉的 key（含短名别名） */
+export function sheetKeySet(): Set<string> {
+  const set = new Set<string>();
+  for (const def of allSheetDefs()) {
+    set.add(def.key);
+    set.add(def.key.split('/').pop() as string);
+  }
+  return set;
+}
 
 /**
- * 把横排像素精灵图（SVG）转换成"真·像素"贴图并逐帧切好。
- * 做法：先按 4 倍渲染 SVG（此时 rect 边缘仍落在整像素上），
- * 再取每个 4x4 色块的正中心像素，得到干净的 1x 像素图，杜绝抗锯齿造成的毛边。
- * 最后把贴图过滤方式设为 NEAREST，游戏内整数倍放大时像素边缘保持锐利。
+ * 注册一张精灵图。
+ * 像素图：先按 4 倍渲染（整数坐标矩形的边缘正好落在像素块上），
+ *         再取每个色块正中心的像素，得到干净的 1x 像素图，最后用 NEAREST 过滤。
+ * 矢量图：按 2 倍栅格化，保持平滑。
  */
-export async function registerPixelSheet(
-  scene: Phaser.Scene,
-  key: string,
-  artKey: string,
-  frameW: number,
-  frameH: number,
-  frames: number,
-): Promise<boolean> {
-  if (scene.textures.exists(key)) return true;
+export async function registerSheet(scene: Phaser.Scene, def: SheetDef): Promise<boolean> {
+  if (scene.textures.exists(def.key)) return true;
   try {
-    const img = await svgToImage(art(artKey).src);
-    const SS = 4;
-    const bigW = frameW * frames * SS;
-    const bigH = frameH * SS;
+    const img = await svgToImage(art(def.key).src);
+    const ss = def.pixel ? 4 : RATIO;
+    const bigW = def.frameW * def.frames * ss;
+    const bigH = def.frameH * ss;
     const big = document.createElement('canvas');
     big.width = bigW;
     big.height = bigH;
@@ -249,35 +317,72 @@ export async function registerPixelSheet(
     if (!bctx) return false;
     bctx.imageSmoothingEnabled = false;
     bctx.drawImage(img, 0, 0, bigW, bigH);
-    const src = bctx.getImageData(0, 0, bigW, bigH).data;
 
-    const out = document.createElement('canvas');
-    out.width = frameW * frames;
-    out.height = frameH;
-    const octx = out.getContext('2d');
-    if (!octx) return false;
-    const outData = octx.createImageData(out.width, out.height);
-    const half = Math.floor(SS / 2);
-    for (let y = 0; y < out.height; y += 1) {
-      for (let x = 0; x < out.width; x += 1) {
-        const si = ((y * SS + half) * bigW + (x * SS + half)) * 4;
-        const di = (y * out.width + x) * 4;
-        outData.data[di] = src[si];
-        outData.data[di + 1] = src[si + 1];
-        outData.data[di + 2] = src[si + 2];
-        outData.data[di + 3] = src[si + 3];
+    let source = big;
+    if (def.pixel) {
+      const src = bctx.getImageData(0, 0, bigW, bigH).data;
+      const out = document.createElement('canvas');
+      out.width = def.frameW * def.frames;
+      out.height = def.frameH;
+      const octx = out.getContext('2d');
+      if (!octx) return false;
+      const outData = octx.createImageData(out.width, out.height);
+      const half = Math.floor(ss / 2);
+      for (let y = 0; y < out.height; y += 1) {
+        for (let x = 0; x < out.width; x += 1) {
+          const si = ((y * ss + half) * bigW + (x * ss + half)) * 4;
+          const di = (y * out.width + x) * 4;
+          outData.data[di] = src[si];
+          outData.data[di + 1] = src[si + 1];
+          outData.data[di + 2] = src[si + 2];
+          outData.data[di + 3] = src[si + 3];
+        }
       }
+      octx.putImageData(outData, 0, 0);
+      source = out;
     }
-    octx.putImageData(outData, 0, 0);
 
-    const texture = scene.textures.addCanvas(key, out);
+    const texture = scene.textures.addCanvas(def.key, source);
     if (!texture) return false;
-    for (let i = 0; i < frames; i += 1) texture.add(i, 0, i * frameW, 0, frameW, frameH);
-    texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    const fs = def.pixel ? 1 : RATIO;
+    for (let i = 0; i < def.frames; i += 1) {
+      texture.add(i, 0, i * def.frameW * fs, 0, def.frameW * fs, def.frameH * fs);
+    }
+    if (def.pixel) texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     return true;
   } catch (err) {
-    console.warn(`[texture] 像素图 ${key} 生成失败`, err);
+    console.warn(`[texture] 精灵图 ${def.key} 生成失败`, err);
     return false;
+  }
+}
+
+/** 创建全部角色 / 动物动画 */
+export function createSheetsAnimations(scene: Phaser.Scene): void {
+  for (const kind of CHAR_KINDS) {
+    for (const action of CHAR_ACTION_ORDER) {
+      const key = characterAnimKey(kind, action);
+      if (scene.anims.exists(key)) continue;
+      const def = CHAR_ACTIONS[action];
+      scene.anims.create({
+        key,
+        frames: scene.anims.generateFrameNumbers(characterSheetKey(kind, action), { start: 0, end: def.frames - 1 }),
+        frameRate: def.fps,
+        repeat: def.loop ? -1 : 0,
+      });
+    }
+  }
+  for (const species of ANIMAL_SPECIES) {
+    for (const action of ANIMAL_ACTION_ORDER) {
+      const key = animalAnimKey(species, action);
+      if (scene.anims.exists(key)) continue;
+      const def = ANIMAL_ACTIONS[species][action];
+      scene.anims.create({
+        key,
+        frames: scene.anims.generateFrameNumbers(animalSheetKey(species, action), { start: 0, end: def.frames - 1 }),
+        frameRate: def.fps,
+        repeat: def.loop ? -1 : 0,
+      });
+    }
   }
 }
 

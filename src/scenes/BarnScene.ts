@@ -229,6 +229,7 @@ export class BarnScene extends BaseWorldScene {
     this.player.freeze(true);
     this.player.setPosition(760, 560);
     this.player.facing = -1;
+    this.player.playAction('squeeze');
     this.statusText.setVisible(true).setText('按顺序点按钮，左边一下、右边一下～');
     this.slots.forEach((s) => s.setVisible(true));
     this.buttons.forEach((b) => b.setVisible(true));
@@ -308,6 +309,8 @@ export class BarnScene extends BaseWorldScene {
     this.slots.forEach((s) => s.setVisible(false));
     this.buttons.forEach((b) => b.setVisible(false));
     this.player.freeze(false);
+    this.player.setSustainedAction(null);
+    this.player.playAction('cheer');
 
     const hearts = this.add.particles(COW.x, COW.y - 120, 'ui/heart', {
       speedY: { min: -110, max: -50 },

@@ -191,6 +191,13 @@ const debugApi = {
     store.addItem('feed', 3, true);
     return store.feed(a.id);
   },
+  /** 重开档（含清空存档），用于验收"开局状态" */
+  resetSave: (kind: 'boy' | 'girl' = 'girl') => {
+    store.reset(kind);
+    bus.emit('ui:title', false);
+    switchScene('Ranch');
+    return true;
+  },
   startGame: (kind: 'boy' | 'girl' = 'girl') => {
     store.chooseCharacter(kind);
     bus.emit('ui:title', false);

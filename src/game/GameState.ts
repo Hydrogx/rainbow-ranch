@@ -18,7 +18,7 @@ import type {
   DayPhase,
   Settings,
 } from './types';
-import { CROPS, GARDEN_PLOTS, ITEMS, REPEATABLE, RECIPES, START_ANIMALS, TUNING, cropBySeed, itemDef, makeOrder } from '../data/catalog';
+import { CROPS, GARDEN_PLOTS, ITEMS, REPEATABLE, RECIPES, START_ANIMALS, START_OUTFIT, TUNING, cropBySeed, itemDef, makeOrder } from '../data/catalog';
 
 export interface CookResult {
   ok: boolean;
@@ -42,8 +42,8 @@ function createDefaultState(character: CharacterKind = 'girl'): GameStateData {
     coins: TUNING.startCoins,
     stars: 0,
     inventory: { ...TUNING.startInventory },
-    owned: [],
-    equipped: {},
+    owned: [...START_OUTFIT],
+    equipped: { hat: 'ragged_hat', top: 'ragged_shirt', pants: 'ragged_pants' },
     decorations: [],
     animals: START_ANIMALS.map((a) => ({
       id: a.id,
@@ -83,6 +83,7 @@ function sanitize(raw: unknown): GameStateData | null {
 
   const num = (v: unknown, fallback: number) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback);
 
+  const isOldSave = typeof obj.version !== 'number' || obj.version < SAVE_VERSION;
   const animals: AnimalSave[] = Array.isArray(obj.animals)
     ? (obj.animals as AnimalSave[]).filter((a) => a && typeof a.id === 'string' && ITEMS && ['chicken', 'sheep', 'cow'].includes(a.species))
     : base.animals;
@@ -100,8 +101,16 @@ function sanitize(raw: unknown): GameStateData | null {
     coins: Math.max(0, Math.round(num(obj.coins, base.coins))),
     stars: Math.max(0, Math.round(num(obj.stars, 0))),
     inventory: typeof obj.inventory === 'object' && obj.inventory ? { ...(obj.inventory as Record<string, number>) } : {},
-    owned: Array.isArray(obj.owned) ? (obj.owned as string[]).filter((id) => typeof id === 'string') : [],
-    equipped: typeof obj.equipped === 'object' && obj.equipped ? { ...(obj.equipped as GameStateData['equipped']) } : {},
+    owned: isOldSave
+      ? [...new Set([...(Array.isArray(obj.owned) ? (obj.owned as string[]) : []), ...START_OUTFIT])]
+      : Array.isArray(obj.owned)
+        ? (obj.owned as string[]).filter((id) => typeof id === 'string')
+        : [],
+    equipped: isOldSave
+      ? { hat: 'ragged_hat', top: 'ragged_shirt', pants: 'ragged_pants', ...(typeof obj.equipped === 'object' && obj.equipped ? obj.equipped : {}) }
+      : typeof obj.equipped === 'object' && obj.equipped
+        ? { ...(obj.equipped as GameStateData['equipped']) }
+        : {},
     decorations: Array.isArray(obj.decorations) ? (obj.decorations as PlacedDecoration[]).filter((d) => d && typeof d.itemId === 'string') : [],
     animals: animals.length ? animals : base.animals,
     crops,
@@ -395,7 +404,7 @@ export class GameStore {
     return { ok: true };
   }
 
-  equip(id: string | null, slot?: 'hat' | 'top' | 'shoes' | 'backpack' | 'accessory'): void {
+  equip(id: string | null, slot?: 'hat' | 'top' | 'pants' | 'shoes' | 'backpack' | 'accessory'): void {
     if (!id) {
       if (slot) delete this.data.equipped[slot];
       this.notify();

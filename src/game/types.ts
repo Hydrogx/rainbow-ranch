@@ -20,7 +20,7 @@ export interface ItemDef {
   /** 需求星星数解锁（不消耗，只作为里程碑） */
   unlockStars?: number;
   /** 装备部位（服装类） */
-  slot?: 'hat' | 'top' | 'shoes' | 'backpack' | 'accessory';
+  slot?: 'hat' | 'top' | 'pants' | 'shoes' | 'backpack' | 'accessory';
   /** 动物用品的用途说明 */
   use?: 'feed' | 'trough' | 'water_trough' | 'brush' | 'bell' | 'toy';
   desc: string;
@@ -114,6 +114,7 @@ export interface PlacedDecoration {
 export interface EquippedItems {
   hat?: string;
   top?: string;
+  pants?: string;
   shoes?: string;
   backpack?: string;
   accessory?: string;

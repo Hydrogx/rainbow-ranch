@@ -90,6 +90,11 @@ export const ITEMS: Record<string, ItemDef> = Object.fromEntries(
     def({ id: 'cow_bell', name: '牛铃铛', icon: 'props/bell', category: 'supply', price: 35, use: 'bell', desc: '叮叮当当，奶牛心情更好。' }),
     def({ id: 'animal_ball', name: '动物玩具球', icon: 'props/ball', category: 'supply', price: 25, use: 'toy', desc: '和动物一起玩，亲密度上升。' }),
 
+    /* 初始装备：破破烂烂的三件套（开局自动穿戴） */
+    def({ id: 'ragged_hat', name: '破草帽', icon: 'characters/ragged_hat', category: 'clothing', price: 0, slot: 'hat', desc: '边都磨破了的旧草帽，先凑合戴吧。' }),
+    def({ id: 'ragged_shirt', name: '破衣服', icon: 'characters/ragged_shirt', category: 'clothing', price: 0, slot: 'top', desc: '洗得发白、还打了补丁的衣服。' }),
+    def({ id: 'ragged_pants', name: '破裤子', icon: 'characters/ragged_pants', category: 'clothing', price: 0, slot: 'pants', desc: '膝盖破了个洞的旧裤子。' }),
+
     /* 角色装饰 */
     def({ id: 'hat_straw', name: '草帽', icon: 'characters/hat_straw', category: 'clothing', price: 30, slot: 'hat', desc: '晒太阳的时候戴上它。' }),
     def({ id: 'hat_rain', name: '雨帽', icon: 'characters/hat_rain', category: 'clothing', price: 35, slot: 'hat', desc: '下雨天也不怕淋湿。' }),
@@ -97,7 +102,9 @@ export const ITEMS: Record<string, ItemDef> = Object.fromEntries(
     def({ id: 'ears', name: '动物耳朵发箍', icon: 'characters/ears', category: 'clothing', price: 40, slot: 'accessory', desc: '毛茸茸的猫耳朵。' }),
     def({ id: 'hairpin', name: '星星发夹', icon: 'characters/hairpin', category: 'clothing', price: 35, slot: 'accessory', desc: '一闪一闪的小星星。' }),
     def({ id: 'scarf', name: '彩虹围巾', icon: 'characters/scarf', category: 'clothing', price: 40, slot: 'accessory', desc: '暖暖的彩虹围巾。' }),
-    def({ id: 'overalls', name: '园丁背带裤', icon: 'characters/overalls', category: 'clothing', price: 45, slot: 'top', desc: '干活最方便的背带裤。' }),
+    def({ id: 'overalls', name: '园丁背带裤', icon: 'characters/overalls', category: 'clothing', price: 45, slot: 'top', desc: '干活最方便的上衣。' }),
+    def({ id: 'pants_denim', name: '蓝色工装裤', icon: 'characters/pants_denim', category: 'clothing', price: 35, slot: 'pants', desc: '结实又好看的工装裤。' }),
+    def({ id: 'pants_rain', name: '防水雨裤', icon: 'characters/pants_rain', category: 'clothing', price: 45, slot: 'pants', desc: '下雨天也不会湿裤子。' }),
     def({ id: 'raincoat', name: '雨衣', icon: 'characters/raincoat', category: 'clothing', price: 50, slot: 'top', desc: '下雨天穿上亮黄色雨衣。' }),
     def({ id: 'boots', name: '雨靴', icon: 'characters/boots', category: 'clothing', price: 40, slot: 'shoes', desc: '踩水洼最开心。' }),
     def({ id: 'sneakers', name: '彩虹鞋', icon: 'characters/sneakers', category: 'clothing', price: 35, slot: 'shoes', desc: '跑起来像风一样。' }),
@@ -167,11 +174,19 @@ export const recipeById = (id: string): RecipeDef | undefined => RECIPES.find((r
 export const SHOP_CATEGORIES = [
   { id: 'seed', name: '种子', icon: 'ui/seed', itemIds: ['carrot_seed', 'tomato_seed', 'corn_seed', 'pumpkin_seed', 'lettuce_seed', 'strawberry_seed'] },
   { id: 'supply', name: '动物用品', icon: 'ui/feed', itemIds: ['hay', 'colorful_trough', 'star_trough', 'wool_brush', 'cow_bell', 'animal_ball'] },
-  { id: 'clothing', name: '角色装饰', icon: 'characters/hat_straw', itemIds: ['hat_straw', 'hat_rain', 'hat_chef', 'ears', 'hairpin', 'scarf', 'overalls', 'raincoat', 'boots', 'sneakers', 'backpack'] },
+  {
+    id: 'clothing',
+    name: '角色装饰',
+    icon: 'characters/hat_straw',
+    itemIds: ['hat_straw', 'hat_rain', 'hat_chef', 'ears', 'hairpin', 'scarf', 'overalls', 'raincoat', 'pants_denim', 'pants_rain', 'boots', 'sneakers', 'backpack'],
+  },
   { id: 'decor', name: '牧场装饰', icon: 'ui/decor', itemIds: ['path', 'flowers', 'mushroom', 'fence', 'pumpkin_lantern', 'mailbox', 'rainbow_flag', 'birdhouse', 'windmill', 'pond'] },
 ] as const;
 
 export type ShopCategoryId = (typeof SHOP_CATEGORIES)[number]['id'];
+
+/** 开局就穿在身上的破旧三件套 */
+export const START_OUTFIT = ['ragged_hat', 'ragged_shirt', 'ragged_pants'];
 
 /** 商店里可以反复购买的物品 */
 export const REPEATABLE = new Set(['carrot_seed', 'tomato_seed', 'corn_seed', 'pumpkin_seed', 'lettuce_seed', 'strawberry_seed', 'feed', 'hay']);

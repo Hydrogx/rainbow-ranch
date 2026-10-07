@@ -309,24 +309,21 @@ export class Hud {
   /** 角色预览用的分层 SVG（换装界面用） */
   static wardrobePreview(): string {
     const eq = store.data.equipped;
-    const isBoy = store.data.character === 'boy';
-    // 注意顺序：背包在身体后面，其余装扮叠在身体上面
+    const kind = store.data.character === 'girl' ? 'girl' : 'boy';
     const parts: string[] = [];
-    if (eq.backpack) parts.push(`<div class="layer">${rawSvg('characters/backpack', 'svg-icon')}</div>`);
-    if (isBoy && ART['characters/boy_walk']) {
-      // 男孩用像素行走图的站立帧（CSS 裁切出第 2 帧）
-      parts.push(`<div class="layer pixel-layer">${rawSvg('characters/boy_walk', 'svg-icon')}</div>`);
+    // 身体用像素站立图的第 0 帧（CSS 裁切），装扮图层都是同尺寸单帧，天然对齐
+    const sheet = `characters/${kind}_idle`;
+    if (ART[sheet]) {
+      parts.push(`<div class="layer sheet-layer" style="--frames:2;--frame:0">${rawSvg(sheet, 'svg-icon')}</div>`);
     } else {
-      parts.push(`<div class="layer">${rawSvg(isBoy ? 'characters/boy' : 'characters/girl', 'svg-icon')}</div>`);
+      parts.push(`<div class="layer">${rawSvg(kind === 'boy' ? 'characters/boy' : 'characters/girl', 'svg-icon')}</div>`);
     }
-    const overlays: Array<string | undefined> = [
-      eq.top ? (eq.top === 'overalls' ? 'characters/overalls' : 'characters/raincoat') : undefined,
-      eq.shoes ? (eq.shoes === 'boots' ? 'characters/boots' : 'characters/sneakers') : undefined,
-      eq.hat ? (eq.hat === 'hat_straw' ? 'characters/hat_straw' : eq.hat === 'hat_rain' ? 'characters/hat_rain' : 'characters/hat_chef') : undefined,
-      eq.accessory ? (eq.accessory === 'ears' ? 'characters/ears' : eq.accessory === 'hairpin' ? 'characters/hairpin' : 'characters/scarf') : undefined,
-    ];
-    overlays.forEach((key) => {
-      if (key) parts.push(`<div class="layer">${rawSvg(key, 'svg-icon')}</div>`);
+    // 顺序与游戏内一致：裤子 → 鞋 → 上衣 → 背包 → 帽子 → 发饰
+    const order: Array<string | undefined> = [eq.pants, eq.shoes, eq.top, eq.backpack, eq.accessory, eq.hat];
+    order.forEach((itemId) => {
+      if (!itemId) return;
+      const def = itemDef(itemId);
+      if (ART[def.icon]) parts.push(`<div class="layer">${rawSvg(def.icon, 'svg-icon')}</div>`);
     });
     return parts.join('');
   }

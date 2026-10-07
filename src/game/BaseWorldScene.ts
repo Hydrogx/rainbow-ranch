@@ -91,7 +91,9 @@ export abstract class BaseWorldScene extends Phaser.Scene {
     this.obstacles = this.physics.add.staticGroup();
 
     this.player = new Player(this, opts.playerStart.x, opts.playerStart.y);
+    // 以脚为锚点跟随，稍微上移一点，让主人公在画面里更居中
     this.cameras.main.startFollow(this.player.body, true, 0.12, 0.12);
+    this.cameras.main.setFollowOffset(0, 70);
     this.physics.add.collider(this.player.body, this.obstacles);
 
     const kb = this.input.keyboard;

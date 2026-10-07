@@ -754,6 +754,7 @@ body {
 }
 
 .avatar {
+  position: relative;
   width: calc(64px * var(--ui-scale));
   height: calc(64px * var(--ui-scale));
   border-radius: 50%;
@@ -851,19 +852,40 @@ body {
   width: auto;
 }
 
-/* 像素小男孩：32x48 的横排 4 帧，这里裁出第 2 帧（双脚并拢的站立帧） */
-.wardrobe-preview .pixel-layer {
-  display: block;
+/* 换装预览：所有图层都是 32x48 的像素图，按同一比例对齐 */
+.wardrobe-preview .layer {
   width: calc(230px * var(--ui-scale) * 0.6667);
+  display: block;
   overflow: hidden;
 }
 
-.wardrobe-preview .pixel-layer svg {
+.wardrobe-preview .sheet-layer svg {
   position: absolute;
-  left: -100%;
+  left: calc(-100% * var(--frame, 0));
   bottom: 0;
-  width: 400%;
+  width: calc(100% * var(--frames, 1));
   height: 100%;
+  image-rendering: pixelated;
+}
+
+/* 订单头像：裁出站立图的第一帧 */
+.avatar .sheet-crop {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  aspect-ratio: 32 / 48;
+  overflow: hidden;
+  display: block;
+}
+
+.avatar .sheet-crop svg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 100%;
+  width: calc(100% * var(--frames, 1));
   image-rendering: pixelated;
 }
 

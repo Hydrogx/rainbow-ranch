@@ -1,34 +1,31 @@
 /**
  * 主人公（PRD 第 6 节）
- * - 男孩 / 女孩共用同一套骨架，装扮以图层方式叠加，因此帽子/上衣/鞋子/背包都能实时更换
- * - 物理体与显示分离：物理体是一个不可见 sprite，视觉部分放在 container 里，
- *   这样走路时的上下弹跳不会影响碰撞盒，也不会抖。
+ * - 男孩 / 女孩都是像素小人（32x48，整数倍放大 + 最近邻采样）
+ * - 五个动作：原地休息 / 走路 / 拿东西 / 捡东西 / 挤东西
+ * - 装扮以图层方式叠加，并按当前动作帧的纵向偏移一起移动，保证贴合
+ * - 物理体与显示分离：走路弹跳不影响碰撞盒
  */
 import Phaser from 'phaser';
-import { art } from '../assets';
+import { ART_K } from '../systems/TextureFactory';
+import {
+  CHAR_KINDS,
+  CHAR_FRAME_H,
+  CHAR_FRAME_W,
+  PIXEL_SCALE,
+  characterAnimKey,
+  characterSheetKey,
+  type CharKind,
+} from '../systems/TextureFactory';
+import { CHAR_ACTIONS, type CharAction } from '../data/characterFrames';
 import { store } from '../game/GameState';
 import { DEPTH } from '../game/GameConfig';
-import {
-  ART_K,
-  PIXEL_FRAME_H,
-  PIXEL_IDLE_FRAME,
-  PIXEL_SHEET_KEY,
-  WALK_ANIM_KEY,
-} from '../systems/TextureFactory';
+import { itemDef } from '../data/catalog';
 
-export const PLAYER_SCALE = 0.86;
-const IMG = PLAYER_SCALE * ART_K;
-/** 像素小男孩的整数放大倍数：最近邻采样 + 整数倍放大，像素边缘不糊也不抖 */
-export const PIXEL_BOY_SCALE = 4;
-/** 矢量角色的实际显示高度：贴图是 2 倍栅格化，所以是 400 × 0.43 ≈ 172px */
-const VECTOR_H = 400 * IMG;
-/** 像素角色的实际显示高度：48 × 4 = 192px */
-const PIXEL_H = PIXEL_FRAME_H * PIXEL_BOY_SCALE;
 const BODY_W = 46;
 const BODY_H = 34;
 const SPEED = 235;
 
-export type PlayerSlot = 'hat' | 'top' | 'shoes' | 'backpack' | 'accessory';
+export type PlayerSlot = 'hat' | 'top' | 'pants' | 'shoes' | 'backpack' | 'accessory';
 
 export interface MoveKeys {
   up: Phaser.Input.Keyboard.Key;
@@ -41,6 +38,9 @@ export interface MoveKeys {
   d: Phaser.Input.Keyboard.Key;
 }
 
+/** 动作 → 粒子/道具表现 */
+type ActionKind = 'water' | 'feed' | 'pet' | 'plant' | 'harvest' | 'pickup' | 'cheer' | 'squeeze';
+
 export class Player {
   scene: Phaser.Scene;
   body: Phaser.Physics.Arcade.Sprite;
@@ -48,16 +48,19 @@ export class Player {
   shadow: Phaser.GameObjects.Ellipse;
 
   private baseSprite: Phaser.GameObjects.Sprite;
+  private equipLayer: Phaser.GameObjects.Container;
   private layers: Partial<Record<PlayerSlot, Phaser.GameObjects.Image>> = {};
   private target: Phaser.Math.Vector2 | null = null;
   private onArrive: (() => void) | null = null;
   private animT = 0;
   private frozen = false;
   private stuckFor = 0;
+  private actionLock: { action: CharAction; until: number } | null = null;
+  private sustained: CharAction | null = null;
+  currentAction: CharAction = 'idle';
 
   facing: 1 | -1 = 1;
   moving = false;
-  /** 玩家当前是否被"点击寻路"驱动 */
   clickMoving = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
@@ -74,44 +77,41 @@ export class Player {
     this.shadow = scene.add.ellipse(x, y, 54, 20, 0x3b2a1d, 0.22).setDepth(DEPTH.sortedBase + y - 0.5);
 
     this.view = scene.add.container(x, y).setDepth(DEPTH.sortedBase + y);
-    this.baseSprite = scene.add.sprite(0, 0, this.baseKey()).setOrigin(0.5, 1);
-    this.view.add(this.baseSprite);
-    this.applyBaseTransform();
+    this.equipLayer = scene.add.container(0, 0);
+    this.baseSprite = scene.add.sprite(0, 0, this.baseSheet('idle'), 0).setOrigin(0.5, 1);
+    this.view.add([this.baseSprite, this.equipLayer]);
+    this.applyBodyScale();
     this.refreshEquipment();
   }
 
-  private baseKey(): string {
-    if (this.usesPixelBoy()) return PIXEL_SHEET_KEY;
+  /* ------------------------------------------------------------------ */
+  /* 外观                                                                */
+  /* ------------------------------------------------------------------ */
+
+  private kind(): CharKind {
+    return store.data.character === 'girl' ? 'girl' : 'boy';
+  }
+
+  private hasSheets(): boolean {
+    return CHAR_KINDS.includes(this.kind()) && this.scene.textures.exists(characterSheetKey(this.kind(), 'idle'));
+  }
+
+  private baseSheet(action: CharAction): string {
+    if (this.hasSheets()) return characterSheetKey(this.kind(), action);
     return store.data.character === 'boy' ? 'characters/boy' : 'characters/girl';
   }
 
-  /** 男孩使用像素行走图（如果贴图没准备好就退回矢量小人） */
-  private usesPixelBoy(): boolean {
-    return store.data.character === 'boy' && this.scene.textures.exists(PIXEL_SHEET_KEY);
-  }
-
-  private applyBaseTransform(): void {
+  private applyBodyScale(): void {
     this.baseSprite.setOrigin(0.5, 1);
-    if (this.usesPixelBoy()) {
-      this.baseSprite.setScale(PIXEL_BOY_SCALE);
-      this.baseSprite.setFrame(PIXEL_IDLE_FRAME);
-    } else {
-      this.baseSprite.setScale(IMG);
-    }
-  }
-
-  /** 装扮图层的缩放：像素小男孩比矢量角色略高，装扮同比例放大才能贴合 */
-  private overlayScale(): number {
-    return this.usesPixelBoy() ? IMG * (PIXEL_H / VECTOR_H) : IMG;
+    // 没有精灵图时退回矢量小人，需要按 2 倍栅格化的比例缩放
+    this.baseSprite.setScale(this.hasSheets() ? PIXEL_SCALE : 0.86 * ART_K);
   }
 
   /** 换角色 / 换装扮后重建图层 */
   refreshEquipment(): void {
-    const key = this.baseKey();
-    if (this.baseSprite.texture.key !== key) this.baseSprite.setTexture(key);
-    this.applyBaseTransform();
-    const overlay = this.overlayScale();
-    const order: PlayerSlot[] = ['backpack', 'top', 'shoes', 'hat', 'accessory'];
+    this.applyBodyScale();
+    // 发饰在帽子下面：戴帽子时发箍被挡住，但耳朵会从帽檐两侧露出来
+    const order: PlayerSlot[] = ['pants', 'shoes', 'top', 'backpack', 'accessory', 'hat'];
     for (const slot of order) {
       const itemId = store.data.equipped[slot];
       const existing = this.layers[slot];
@@ -122,49 +122,29 @@ export class Player {
         }
         continue;
       }
-      const textureKey = this.iconFor(itemId);
+      const textureKey = itemDef(itemId).icon;
+      if (!this.scene.textures.exists(textureKey)) continue;
       if (existing) {
         if (existing.texture.key !== textureKey) existing.setTexture(textureKey);
-        existing.setOrigin(0.5, 1).setScale(overlay);
         continue;
       }
-      const img = this.scene.add.image(0, 0, textureKey).setOrigin(0.5, 1).setScale(overlay);
-      this.view.add(img);
+      const img = this.scene.add.image(0, 0, textureKey).setOrigin(0.5, 1).setScale(PIXEL_SCALE);
+      this.equipLayer.add(img);
       this.layers[slot] = img;
     }
-    // 显式排好图层顺序：背包在最底下，然后是身体，再叠上衣 / 鞋 / 帽子 / 发饰
-    const sequence: Array<Phaser.GameObjects.GameObject | undefined> = [
-      this.layers.backpack,
-      this.baseSprite,
-      this.layers.top,
-      this.layers.shoes,
-      this.layers.hat,
-      this.layers.accessory,
-    ];
+    // 显式排好图层顺序（裤子 → 鞋 → 上衣 → 背包 → 发饰 → 帽子）
     let depth = 0;
-    sequence.forEach((obj) => {
+    order.forEach((slot) => {
+      const obj = this.layers[slot];
       if (!obj) return;
-      this.view.moveTo(obj, depth);
+      this.equipLayer.moveTo(obj, depth);
       depth += 1;
     });
   }
 
-  private iconFor(itemId: string): string {
-    const map: Record<string, string> = {
-      hat_straw: 'characters/hat_straw',
-      hat_rain: 'characters/hat_rain',
-      hat_chef: 'characters/hat_chef',
-      ears: 'characters/ears',
-      hairpin: 'characters/hairpin',
-      scarf: 'characters/scarf',
-      overalls: 'characters/overalls',
-      raincoat: 'characters/raincoat',
-      boots: 'characters/boots',
-      sneakers: 'characters/sneakers',
-      backpack: 'characters/backpack',
-    };
-    return map[itemId] ?? 'characters/hat_straw';
-  }
+  /* ------------------------------------------------------------------ */
+  /* 位置 / 移动                                                         */
+  /* ------------------------------------------------------------------ */
 
   get x(): number {
     return this.body.x;
@@ -187,7 +167,6 @@ export class Player {
     if (on && phys) phys.setVelocity(0, 0);
   }
 
-  /** 点击地面后走过去 */
   moveTo(x: number, y: number, onArrive?: () => void): void {
     this.target = new Phaser.Math.Vector2(x, y);
     this.onArrive = onArrive ?? null;
@@ -201,8 +180,60 @@ export class Player {
     this.clickMoving = false;
   }
 
+  /* ------------------------------------------------------------------ */
+  /* 动作                                                                */
+  /* ------------------------------------------------------------------ */
+
+  /** 一次性动作（捡东西 / 挤一下 / 举着工具等） */
+  startAction(action: CharAction, durationMs?: number): void {
+    const def = CHAR_ACTIONS[action];
+    const ms = durationMs ?? Math.max(320, (def.frames / def.fps) * 1000 + 120);
+    this.actionLock = { action, until: this.scene.time.now + ms };
+    this.applyAction(action);
+  }
+
+  /** 持续动作（挤奶小游戏期间一直保持） */
+  setSustainedAction(action: CharAction | null): void {
+    this.sustained = action;
+    if (action) this.applyAction(action);
+  }
+
+  /** 立刻切到某个动作（会打断一次性动作） */
+  private applyAction(action: CharAction): void {
+    if (this.currentAction === action && this.baseSprite.anims.isPlaying) return;
+    this.currentAction = action;
+    const key = characterAnimKey(this.kind(), action);
+    if (this.hasSheets() && this.scene.anims.exists(key)) {
+      this.baseSprite.play(key, true);
+    } else {
+      this.baseSprite.setTexture(this.baseSheet(action));
+    }
+  }
+
+  /** 每帧决定当前应该播哪个动作 */
+  private updateAction(moving: boolean): void {
+    if (!this.hasSheets()) return;
+    const now = this.scene.time.now;
+    if (this.actionLock && now >= this.actionLock.until) this.actionLock = null;
+    let want: CharAction;
+    if (this.sustained) want = this.sustained;
+    else if (this.actionLock) want = this.actionLock.action;
+    else if (moving) want = 'walk';
+    else want = store.tool === 'hand' ? 'idle' : 'hold';
+    this.applyAction(want);
+
+    // 服装图层跟随当前动作帧的纵向偏移，保证蹲下 / 呼吸时衣服不脱节
+    const def = CHAR_ACTIONS[this.currentAction];
+    const idx = this.baseSprite.anims.currentFrame ? this.baseSprite.anims.currentFrame.index : 0;
+    const offset = def.overlay[Math.min(idx, def.overlay.length - 1)] ?? 0;
+    this.equipLayer.setY(offset * PIXEL_SCALE);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 每帧更新                                                            */
+  /* ------------------------------------------------------------------ */
+
   update(dt: number, keys?: MoveKeys): void {
-    // 场景切换时物理体会先被销毁，这里做个保护
     const phys = this.body.body as Phaser.Physics.Arcade.Body | undefined;
     if (!phys || !this.body.active) return;
     let vx = 0;
@@ -233,7 +264,6 @@ export class Player {
         const speed = Math.min(SPEED, SPEED * (dist / 90));
         phys.setVelocity((dx / dist) * Math.max(90, speed), (dy / dist) * Math.max(90, speed));
         if (Math.abs(dx) > 6) this.facing = dx > 0 ? 1 : -1;
-        // 被建筑卡住时自动放弃，避免小朋友觉得"人物不动了"
         if (Math.abs(phys.velocity.x) < 20 && Math.abs(phys.velocity.y) < 20) this.stuckFor += dt;
         else this.stuckFor = 0;
         if (this.stuckFor > 1200) {
@@ -249,44 +279,30 @@ export class Player {
     this.moving = speedNow > 12;
     this.animT += dt * (this.moving ? 0.014 : 0.003);
 
-    const pixel = this.usesPixelBoy();
     // 像素角色不做程序化的上下弹跳与旋转，否则会破坏像素网格
-    const hop = pixel ? 0 : this.moving ? Math.abs(Math.sin(this.animT)) * 5 : Math.sin(this.animT) * 1.5;
-    const tilt = pixel ? 0 : this.moving ? Math.sin(this.animT) * 2.2 : Math.sin(this.animT * 0.6) * 0.6;
-
+    const hop = this.moving ? Math.abs(Math.sin(this.animT)) * 2 : 0;
     this.view.setPosition(this.body.x, this.body.y - hop);
     this.view.setScale(this.facing, 1);
-    this.view.setAngle(tilt);
-    this.animateBody(this.moving, pixel);
+    this.view.setAngle(0);
     this.view.setDepth(DEPTH.sortedBase + this.body.y);
     this.shadow.setPosition(this.body.x, this.body.y);
     this.shadow.setDepth(DEPTH.sortedBase + this.body.y - 0.5);
-    const squash = this.moving ? 1 : 1 + Math.sin(this.animT) * 0.012;
-    this.shadow.setScale(squash, squash);
+    this.shadow.setScale(1, 1);
     this.shadow.setAlpha(this.moving ? 0.18 : 0.22);
-  }
 
-  /** 走路时循环播放 4 帧行走动画，停下时回到"双脚并拢"的站立帧 */
-  private animateBody(moving: boolean, pixel: boolean): void {
-    if (!pixel) return;
-    if (moving) {
-      if (!this.baseSprite.anims.isPlaying) this.baseSprite.play(WALK_ANIM_KEY);
-      return;
-    }
-    if (this.baseSprite.anims.isPlaying) this.baseSprite.anims.stop();
-    if (this.baseSprite.frame.name !== String(PIXEL_IDLE_FRAME)) this.baseSprite.setFrame(PIXEL_IDLE_FRAME);
+    this.updateAction(this.moving);
   }
 
   /* ------------------------------------------------------------------ */
-  /* 动作表现                                                            */
+  /* 动作表现（粒子 / 道具）                                              */
   /* ------------------------------------------------------------------ */
 
-  /** 靠近作物/动物时的伸手动作 */
-  playAction(kind: 'water' | 'feed' | 'pet' | 'plant' | 'harvest' | 'pickup' | 'cheer'): void {
+  playAction(kind: ActionKind): void {
     const scene = this.scene;
     const dir = this.facing;
     switch (kind) {
       case 'water': {
+        this.startAction('hold', 900);
         const can = scene.add
           .image(this.body.x + dir * 42, this.body.y - 76, 'props/watering_can')
           .setOrigin(0.5, 1)
@@ -314,6 +330,7 @@ export class Player {
         break;
       }
       case 'feed': {
+        this.startAction('hold', 900);
         const bag = scene.add
           .image(this.body.x + dir * 34, this.body.y - 60, 'props/feed_bag')
           .setOrigin(0.5, 1)
@@ -336,6 +353,10 @@ export class Player {
           scene.time.delayedCall(800, () => seeds.destroy());
         });
         scene.time.delayedCall(820, () => bag.destroy());
+        break;
+      }
+      case 'squeeze': {
+        this.setSustainedAction('milk');
         break;
       }
       case 'pet':
@@ -363,9 +384,8 @@ export class Player {
       case 'plant':
       case 'harvest':
       case 'pickup': {
-        if (!this.usesPixelBoy()) {
-          scene.tweens.add({ targets: this.view, scaleY: 0.92, duration: 130, yoyo: true, repeat: 1 });
-        }
+        // 蹲下去捡 / 种：播一次性动作，并让服装图层跟着蹲下
+        this.startAction('pickup');
         if (kind !== 'plant') {
           const sparks = scene.add.particles(this.body.x, this.body.y - 100, 'tex/spark', {
             speed: { min: 40, max: 120 },
@@ -405,4 +425,4 @@ export class Player {
   }
 }
 
-export const playerArtSize = () => art('characters/boy');
+export { CHAR_FRAME_W, CHAR_FRAME_H };

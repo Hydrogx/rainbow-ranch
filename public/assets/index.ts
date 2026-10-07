@@ -20,7 +20,12 @@ export interface Art {
 export const ART: Record<string, Art> = {};
 
 for (const [path, src] of Object.entries(modules)) {
-  const key = path.replace('../assets/', '').replace(/\.svg$/, '');
+  // 开发环境 key 形如 '../assets/animals/chicken.svg'，构建后形如 './animals/chicken.svg'，
+  // 这里统一归一化成 'animals/chicken'
+  const key = path
+    .replace(/^\.\//, '')
+    .replace(/^.*?assets\//, '')
+    .replace(/\.svg$/, '');
   const m = /viewBox="0 0 ([\d.]+) ([\d.]+)"/.exec(src);
   const w = m ? parseFloat(m[1]) : 100;
   const h = m ? parseFloat(m[2]) : 100;

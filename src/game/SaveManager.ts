@@ -6,7 +6,7 @@
 import type { GameStateData } from './types';
 
 export const SAVE_KEY = 'rainbow-ranch-save';
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export function readRawSave(): unknown {
   try {

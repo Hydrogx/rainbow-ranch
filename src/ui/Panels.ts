@@ -208,9 +208,10 @@ export class Panels {
     preview.innerHTML = Hud.wardrobePreview();
     body.appendChild(preview);
 
-    const slots: Array<{ key: 'hat' | 'top' | 'shoes' | 'backpack' | 'accessory'; name: string; ids: string[] }> = [
-      { key: 'hat', name: '帽子', ids: ['hat_straw', 'hat_rain', 'hat_chef'] },
-      { key: 'top', name: '上衣', ids: ['overalls', 'raincoat'] },
+    const slots: Array<{ key: 'hat' | 'top' | 'pants' | 'shoes' | 'backpack' | 'accessory'; name: string; ids: string[] }> = [
+      { key: 'hat', name: '帽子', ids: ['ragged_hat', 'hat_straw', 'hat_rain', 'hat_chef'] },
+      { key: 'top', name: '上衣', ids: ['ragged_shirt', 'overalls', 'raincoat'] },
+      { key: 'pants', name: '裤子', ids: ['ragged_pants', 'pants_denim', 'pants_rain'] },
       { key: 'shoes', name: '鞋子', ids: ['boots', 'sneakers'] },
       { key: 'backpack', name: '背包', ids: ['backpack'] },
       { key: 'accessory', name: '发饰', ids: ['ears', 'hairpin', 'scarf'] },
@@ -444,7 +445,7 @@ export class Panels {
         .join('');
       card.innerHTML = `
         <div class="order-head">
-          <span class="avatar">${rawSvg(`characters/${def.character}`, 'svg-icon')}</span>
+          <span class="avatar"><span class="sheet-crop" style="--frames:2">${rawSvg(`characters/${def.character}_idle`, 'svg-icon')}</span></span>
           <span>${def.name}<br /><small style="font-size:0.7em;color:#7a5a45">${def.kind}</small></span>
         </div>
         <div style="font-size:calc(19px * var(--ui-scale));color:#7a5a45">“${def.line}”</div>

@@ -41,6 +41,8 @@ export class RanchScene extends BaseWorldScene {
   private customerSprites: Phaser.GameObjects.GameObject[] = [];
   private buildings: Record<string, Phaser.GameObjects.Image> = {};
   private unsubscribe?: () => void;
+  /** 会被风吹动的植物（树 / 灌木 / 花） */
+  private swayers: Array<{ obj: Phaser.GameObjects.Image; phase: number; amp: number }> = [];
   private decorSignature = '';
   private orderSignature = '';
 
@@ -54,6 +56,7 @@ export class RanchScene extends BaseWorldScene {
     this.decorSprites = [];
     this.customerSprites = [];
     this.buildings = {};
+    this.swayers = [];
     this.placing = null;
     this.ghost = undefined;
     this.decorSignature = '';
@@ -148,14 +151,7 @@ export class RanchScene extends BaseWorldScene {
     trees.forEach(([x, y, s]) => {
       const t = this.addArt('props/tree', x, y, s);
       this.obstacles.create(x, y - 20, 'tex/dot').setVisible(false).setDisplaySize(64 * s, 44).refreshBody();
-      this.tweens.add({
-        targets: t,
-        angle: Phaser.Math.FloatBetween(-1.2, 1.2),
-        duration: Phaser.Math.Between(2600, 4200),
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-      });
+      this.swayers.push({ obj: t, phase: Math.random() * Math.PI * 2, amp: 1.1 });
     });
 
     const bushes: Array<[number, number, number]> = [
@@ -164,7 +160,7 @@ export class RanchScene extends BaseWorldScene {
     ];
     bushes.forEach(([x, y, s]) => {
       const b = this.addArt('props/bush', x, y, s);
-      this.tweens.add({ targets: b, angle: -1.5, duration: Phaser.Math.Between(2000, 3400), yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      this.swayers.push({ obj: b, phase: Math.random() * Math.PI * 2, amp: 1.6 });
     });
 
     for (let i = 0; i < 34; i += 1) {
@@ -176,14 +172,7 @@ export class RanchScene extends BaseWorldScene {
       if (inPen || inGarden || onRoad) continue;
       const f = this.addArt('props/flower', x, y, Phaser.Math.FloatBetween(0.6, 0.95));
       f.setTint([0xff9cc1, 0xffd45c, 0xa97be0, 0xffffff][i % 4]);
-      this.tweens.add({
-        targets: f,
-        angle: Phaser.Math.FloatBetween(-3, 3),
-        duration: Phaser.Math.Between(1600, 3000),
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-      });
+      this.swayers.push({ obj: f, phase: Math.random() * Math.PI * 2, amp: 3.4 });
     }
 
     // 客人接待区
@@ -608,6 +597,14 @@ export class RanchScene extends BaseWorldScene {
         return false;
       }
       return true;
+    });
+
+    // 风：阴天风最大、雨天次之、晴天微风，所有植物跟着风摆
+    const weather = store.data.weather;
+    const gust = weather === 'cloudy' ? 2 : weather === 'rainy' ? 1.2 : 0.9;
+    const speed = weather === 'cloudy' ? 0.0026 : weather === 'rainy' ? 0.0019 : 0.0013;
+    this.swayers.forEach((s) => {
+      s.obj.setAngle(Math.sin(time * speed * gust + s.phase) * s.amp * gust);
     });
 
     this.sky.update(delta);

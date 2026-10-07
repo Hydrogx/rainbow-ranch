@@ -20,6 +20,10 @@ interface PlotView {
   droplet: Phaser.GameObjects.Image;
   ready: Phaser.GameObjects.Image;
   label: Phaser.GameObjects.Text;
+  /** 植物基础缩放，风吹雨打在此之上叠加 */
+  baseScale: number;
+  /** 每株植物错开相位，看起来才自然 */
+  phase: number;
 }
 
 const COLUMNS = 3;
@@ -29,6 +33,7 @@ const PLOT_H = 130;
 export class GardenScene extends BaseWorldScene {
   private plots: PlotView[] = [];
   private lastStages: number[] = [];
+  private rainDrip?: Phaser.GameObjects.Particles.ParticleEmitter;
 
   constructor() {
     super('Garden');
@@ -94,7 +99,7 @@ export class GardenScene extends BaseWorldScene {
         .setOrigin(0.5, 0)
         .setDepth(DEPTH.bubble - 2);
 
-      const view: PlotView = { index: i, x, y, soil, plant, droplet, ready, label };
+      const view: PlotView = { index: i, x, y, soil, plant, droplet, ready, label, baseScale: 0.8, phase: i * 1.7 };
       this.plots.push(view);
 
       this.addInteractable({
@@ -121,6 +126,22 @@ export class GardenScene extends BaseWorldScene {
         this.gotoScene('Ranch');
       },
     });
+
+    // 下雨时雨点打在植物上的水花
+    this.rainDrip = this.add.particles(0, 0, 'tex/dot', {
+      x: { min: 260, max: 1140 },
+      y: { min: 130, max: 640 },
+      speedY: { min: 130, max: 230 },
+      speedX: { min: -20, max: 20 },
+      scale: { start: 0.26, end: 0.02 },
+      alpha: { start: 0.9, end: 0 },
+      tint: 0x9fd8f0,
+      lifespan: 620,
+      quantity: 2,
+      frequency: 70,
+      emitting: false,
+    });
+    this.rainDrip.setDepth(DEPTH.bubble);
 
     this.refreshPlots(true);
     this.time.delayedCall(600, () => bus.emit(EV.hint, '选好种子，点空菜地就能播种；用水壶浇水会长得更快哦！'));
@@ -269,13 +290,15 @@ export class GardenScene extends BaseWorldScene {
       view.soil.setTint(crop.watered ? 0xa8c98a : 0xffffff);
       if (crop.stage >= 4) {
         view.plant.setTexture(def.icon);
-        view.plant.setScale(0.62 * ART_K);
+        view.baseScale = 0.62 * ART_K;
+        view.plant.setScale(view.baseScale);
         view.ready.setVisible(true);
         view.droplet.setVisible(false);
         view.label.setText('可以收获啦！');
       } else {
         view.plant.setTexture(`tex/stage${crop.stage}`);
-        view.plant.setScale(0.8 - crop.stage * 0.06);
+        view.baseScale = 0.8 - crop.stage * 0.06;
+        view.plant.setScale(view.baseScale);
         view.ready.setVisible(false);
         view.droplet.setVisible(!crop.watered);
         const names = ['小种子', '发芽了', '长叶子', '开花了'];
@@ -287,6 +310,7 @@ export class GardenScene extends BaseWorldScene {
   update(time: number, delta: number): void {
     this.updateWorld(time, delta);
     this.refreshPlots();
+    this.animatePlants(time, delta);
     // 提示文字跟着工具变化
     this.interactables.forEach((item: Interactable) => {
       if (!item.id.startsWith('plot_')) return;
@@ -307,6 +331,30 @@ export class GardenScene extends BaseWorldScene {
       }
     });
     this.sky.update(delta);
+  }
+
+  /**
+   * 植物随风摆动 + 下雨被打得点头。
+   * 风力/雨势都跟着天气走：阴天风最大，雨天摆幅小一些但会上下点头。
+   */
+  private animatePlants(time: number, delta: number): void {
+    void delta;
+    const weather = store.data.weather;
+    const gust = weather === 'cloudy' ? 1.9 : weather === 'rainy' ? 1 : 0.85;
+    const speed = weather === 'cloudy' ? 0.0055 : weather === 'rainy' ? 0.0042 : 0.0026;
+    const amp = weather === 'rainy' ? 2.6 : weather === 'cloudy' ? 4.4 : 2.2;
+    this.plots.forEach((view) => {
+      if (!view.plant.visible) return;
+      const t = time * speed + view.phase;
+      view.plant.setAngle(Math.sin(t) * amp * gust);
+      if (weather === 'rainy') {
+        const nod = Math.abs(Math.sin(time * 0.006 + view.phase));
+        view.plant.setScale(view.baseScale * (1 - nod * 0.07), view.baseScale * (1 + nod * 0.05));
+      } else {
+        view.plant.setScale(view.baseScale);
+      }
+    });
+    if (this.rainDrip) this.rainDrip.emitting = weather === 'rainy';
   }
 
   /** 种子选择变化时刷新 */

@@ -26,92 +26,10 @@ const files = {};
 
 /* ============================================================
  * 动物
+ * ------------------------------------------------------------
+ * 三种动物的单帧素材与全部动作帧改由 scripts/generate-animal-anim.mjs 生成
+ * （见 npm run art 的执行顺序），这里不再重复定义，避免两份美术不一致。
  * ============================================================ */
-
-// 小鸡（PRD 12.1 原样）
-files['animals/chicken.svg'] = svg(
-  '0 0 160 160',
-  `  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-    <ellipse cx="80" cy="91" rx="48" ry="39" fill="#FFF4C7"/>
-    <circle cx="112" cy="55" r="30" fill="#FFF8D8"/>
-    <path d="M101 31c5-18 17-18 20-2 12-13 24-5 17 9" fill="#F26A5B"/>
-    <path d="M139 58l18 8-18 9z" fill="#F5A623"/>
-    <circle cx="122" cy="52" r="5" fill="#30251F" stroke="none"/>
-    <path d="M68 128v19M94 128v19" fill="none"/>
-    <path d="M59 148h18M85 148h18" fill="none"/>
-    <path d="M36 83c-17-3-19-20-5-25 8-3 15 3 16 12" fill="#FFF8D8"/>
-  </g>`,
-);
-
-// 棕色小鸡
-files['animals/chicken_brown.svg'] = svg(
-  '0 0 160 160',
-  `  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-    <ellipse cx="80" cy="91" rx="48" ry="39" fill="#E8A96B"/>
-    <circle cx="112" cy="55" r="30" fill="#F3BE86"/>
-    <path d="M101 31c5-18 17-18 20-2 12-13 24-5 17 9" fill="#E0453A"/>
-    <path d="M139 58l18 8-18 9z" fill="#F5A623"/>
-    <circle cx="122" cy="52" r="5" fill="#30251F" stroke="none"/>
-    <circle cx="132" cy="62" r="7" fill="#F08A7E" stroke="none" opacity=".8"/>
-    <path d="M68 128v19M94 128v19" fill="none"/>
-    <path d="M59 148h18M85 148h18" fill="none"/>
-    <path d="M36 83c-17-3-19-20-5-25 8-3 15 3 16 12" fill="#F3BE86"/>
-  </g>`,
-);
-
-// 鸡宝宝
-files['animals/chick.svg'] = svg(
-  '0 0 120 120',
-  `  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-    <circle cx="58" cy="70" r="36" fill="#FFE066"/>
-    <circle cx="74" cy="42" r="24" fill="#FFF0A8"/>
-    <path d="M68 20c4-12 13-11 14-1" fill="#F26A5B"/>
-    <path d="M96 44l12 6-12 6z" fill="#F5A623"/>
-    <circle cx="80" cy="38" r="4" fill="#30251F" stroke="none"/>
-    <path d="M50 104v10M72 104v10" fill="none"/>
-  </g>`,
-);
-
-// 绵羊
-files['animals/sheep.svg'] = svg(
-  '0 0 190 170',
-  `  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M66 122v30M104 122v30" fill="none"/>
-    <path d="M56 152h20M94 152h20" fill="none"/>
-    <g fill="#FFFDF7">
-      <circle cx="58" cy="88" r="25"/><circle cx="92" cy="80" r="28"/>
-      <circle cx="124" cy="92" r="23"/><circle cx="76" cy="108" r="23"/>
-      <circle cx="110" cy="110" r="21"/>
-    </g>
-    <ellipse cx="152" cy="76" rx="27" ry="24" fill="#F3E3D3"/>
-    <path d="M130 58c3-15 15-21 25-16 11-6 25 3 22 17" fill="#FFFDF7"/>
-    <ellipse cx="127" cy="70" rx="10" ry="7" fill="#E7CDB6" transform="rotate(-25 127 70)"/>
-    <ellipse cx="176" cy="68" rx="10" ry="7" fill="#E7CDB6" transform="rotate(25 176 68)"/>
-    <circle cx="144" cy="74" r="4.5" fill="#30251F" stroke="none"/>
-    <circle cx="163" cy="74" r="4.5" fill="#30251F" stroke="none"/>
-    <path d="M148 90c4 4 9 4 13 0" fill="none"/>
-    <circle cx="139" cy="86" r="5" fill="#F6B6B0" stroke="none" opacity=".8"/>
-    <circle cx="167" cy="86" r="5" fill="#F6B6B0" stroke="none" opacity=".8"/>
-  </g>`,
-);
-
-// 奶牛（PRD 12.4 原样）
-files['animals/cow.svg'] = svg(
-  '0 0 220 170',
-  `  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-    <ellipse cx="105" cy="98" rx="72" ry="45" fill="#FFFDF5"/>
-    <circle cx="174" cy="76" r="38" fill="#FFFDF5"/>
-    <path d="M151 45l-18-20M193 44l18-20" fill="none"/>
-    <path d="M150 66c-13-19-30-15-34 0 7 9 25 9 34 0zM201 66c13-19 30-15 34 0-7 9-25 9-34 0z" fill="#EFA8A0"/>
-    <path d="M171 88c-14 9-14 23 0 28 14-5 14-19 0-28z" fill="#EFA8A0"/>
-    <circle cx="162" cy="69" r="5" fill="#30251F" stroke="none"/>
-    <circle cx="188" cy="69" r="5" fill="#30251F" stroke="none"/>
-    <path d="M69 137v23M111 137v23M143 130v30" fill="none"/>
-    <path d="M58 160h22M100 160h22M132 160h22" fill="none"/>
-    <path d="M53 68c18-22 32 2 17 18-12 13-28 2-17-18z" fill="#8B6A59"/>
-    <path d="M103 76c16-18 31 3 17 17-12 11-27-1-17-17z" fill="#8B6A59"/>
-  </g>`,
-);
 
 /* ============================================================
  * 主人公（统一 120x200 坐标系，便于叠加装扮）

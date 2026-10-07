@@ -8,7 +8,8 @@ import { art } from '../assets';
 import { DEPTH } from '../game/GameConfig';
 import type { AnimalSave, AnimalState, Species } from '../game/types';
 import { store } from '../game/GameState';
-import { ART_K } from '../systems/TextureFactory';
+import { ART_K, animalAnimKey, animalSheetKey } from '../systems/TextureFactory';
+import type { AnimalAction } from '../data/animalFrames';
 
 export interface Rect {
   x: number;
@@ -24,12 +25,6 @@ export interface AnimalWorld {
   waterTrough?: { x: number; y: number };
   onProduce?: (animal: Animal) => void;
 }
-
-const SPECIES_ART: Record<Species, string> = {
-  chicken: 'animals/chicken',
-  sheep: 'animals/sheep',
-  cow: 'animals/cow',
-};
 
 const SPECIES_SCALE: Record<Species, number> = {
   chicken: 0.66,
@@ -59,7 +54,8 @@ export class Animal {
   view: Phaser.GameObjects.Container;
   shadow: Phaser.GameObjects.Ellipse;
   emote: Phaser.GameObjects.Image;
-  private sprite: Phaser.GameObjects.Image;
+  private sprite: Phaser.GameObjects.Sprite;
+  private action: AnimalAction = 'idle';
 
   private stateTimer = 0;
   private target: Phaser.Math.Vector2 | null = null;
@@ -73,7 +69,7 @@ export class Animal {
     this.data = data;
     this.world = world;
 
-    const tex = this.textureFor();
+    const idleSheet = animalSheetKey(data.species, 'idle');
     const scale = SPECIES_SCALE[data.species] * ART_K;
 
     this.body = scene.physics.add.sprite(data.x, data.y, 'tex/dot');
@@ -85,22 +81,27 @@ export class Animal {
     phys.setCollideWorldBounds(true);
 
     this.shadow = scene.add
-      .ellipse(data.x, data.y, art(tex).w * scale * 0.5, 18, 0x3b2a1d, 0.2)
+      .ellipse(data.x, data.y, art(idleSheet).w * scale * 0.5, 18, 0x3b2a1d, 0.2)
       .setDepth(DEPTH.sortedBase + data.y - 0.5);
 
     this.view = scene.add.container(data.x, data.y).setDepth(DEPTH.sortedBase + data.y);
-    this.sprite = scene.add.image(0, 0, tex).setOrigin(0.5, 1).setScale(scale);
+    this.sprite = scene.add.sprite(0, 0, idleSheet, 0).setOrigin(0.5, 1).setScale(scale);
     this.view.add(this.sprite);
-    if (data.color === 'brown' && data.species === 'chicken') this.sprite.setTexture('animals/chicken_brown');
+    // 棕色小鸡直接给整体染色，省掉一整套重复素材
+    if (data.color === 'brown' && data.species === 'chicken') this.sprite.setTint(0xdfa06a);
+    this.playAction('idle');
 
     this.emote = scene.add.image(data.x, data.y - 74, 'ui/heart').setScale(0).setDepth(DEPTH.bubble);
 
     this.pickNextAction(0);
   }
 
-  private textureFor(): string {
-    if (this.data.species === 'chicken') return this.data.color === 'brown' ? 'animals/chicken_brown' : 'animals/chicken';
-    return SPECIES_ART[this.data.species];
+  /** 切换动作动画：原地休息 / 走路 / 生产（下蛋、产毛、挤奶） */
+  private playAction(action: AnimalAction): void {
+    if (this.action === action && this.sprite.anims.isPlaying) return;
+    this.action = action;
+    const key = animalAnimKey(this.data.species, action);
+    if (this.scene.anims.exists(key)) this.sprite.play(key, true);
   }
 
   /** 用于点击的图形对象 */
@@ -248,6 +249,8 @@ export class Animal {
     this.data.y = Math.round(this.body.y);
 
     const moving = this.state === 'walk' || this.state === 'followPlayer';
+    // 状态机 → 动画：走路 / 生产（下蛋 · 产毛 · 挤奶）/ 其余都是原地休息
+    this.playAction(moving ? 'walk' : this.state === 'produce' ? 'produce' : 'idle');
     const hop = moving ? Math.abs(Math.sin(this.animT)) * 3.5 : this.state === 'happy' || this.state === 'play' ? Math.abs(Math.sin(this.animT * 3)) * 6 : Math.sin(this.animT) * 1.4;
 
     this.view.setPosition(this.body.x, this.body.y - hop);

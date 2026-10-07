@@ -353,6 +353,24 @@ async function main() {
     await call('growAll');
     await sleep(1200);
     await shot('05c-garden-grown');
+    const sway = await page.evaluate(() => {
+      const s = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Garden');
+      const plants = s.plots.filter((p) => p.plant.visible);
+      return { count: plants.length, maxAngle: plants.length ? Math.max(...plants.map((p) => Math.abs(p.plant.angle))) : 0 };
+    });
+    console.log(`   菜地植物 ${sway.count} 株在摆动，最大摆角 ${sway.maxAngle.toFixed(2)}°`);
+    if (sway.count === 0 || sway.maxAngle < 0.2) errors.push('[菜地] 植物没有随风摆动');
+    await call('setWeather', 'rainy');
+    await sleep(1500);
+    await shot('05e-garden-rain');
+    const raining = await page.evaluate(() => {
+      const s = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Garden');
+      return !!s.rainDrip && s.rainDrip.emitting;
+    });
+    console.log(`   雨天水花粒子: ${raining}`);
+    if (!raining) errors.push('[菜地] 雨天没有水花粒子');
+    await call('setWeather', 'sunny');
+    await sleep(600);
     const h = await call('harvestAll');
     console.log(`   收获 ${h} 块地`);
     await sleep(900);
@@ -431,6 +449,14 @@ async function main() {
     await call('setWeather', 'rainy');
     await sleep(2200);
     await shot('09-rain');
+    const wet = await page.evaluate(() => {
+      const s = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+      const angles = s.swayers.map((x) => Math.abs(x.obj.angle));
+      return { plants: angles.length, maxAngle: angles.length ? Math.max(...angles) : 0, weather: window.__RANCH__.store.data.weather };
+    });
+    console.log(`   风摆植物 ${wet.plants} 株，最大摆角 ${wet.maxAngle.toFixed(2)}°（${wet.weather}）`);
+    if (wet.plants < 10) errors.push('[植物] 风摆植物数量不足');
+    if (wet.maxAngle < 0.2) errors.push('[植物] 植物没有被风吹动');
   });
 
   await step('天气：阴天', async () => {
@@ -482,13 +508,60 @@ async function main() {
   });
 
   await step('男孩：像素行走动画与换装预览', async () => {
-    await page.evaluate(() => localStorage.removeItem('rainbow-ranch-save'));
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await waitReady();
-    await sleep(1400);
-    await call('startGame', 'boy');
+    // 直接重开档（模拟新玩家第一次进入），验证初始"破破烂烂"装备
+    await call('resetSave', 'boy');
     await sleep(2600);
     await shot('21-boy-ranch');
+
+    // 素材与动作自检
+    const assets = await page.evaluate(() => {
+      const g = window.__RANCH__.game;
+      const sheets = [];
+      for (const k of ['boy', 'girl']) for (const a of ['idle', 'walk', 'hold', 'pickup', 'milk']) sheets.push(`characters/${k}_${a}`);
+      for (const a of ['idle', 'walk', 'produce']) for (const s of ['chicken', 'sheep', 'cow']) sheets.push(`animals/${s}_${a}`);
+      const anims = [];
+      for (const k of ['boy', 'girl']) for (const a of ['idle', 'walk', 'hold', 'pickup', 'milk']) anims.push(`${k}-${a}`);
+      for (const a of ['idle', 'walk', 'produce']) for (const s of ['chicken', 'sheep', 'cow']) anims.push(`${s}-${a}`);
+      return {
+        sheetsMissing: sheets.filter((k) => !g.textures.exists(k)),
+        animsMissing: anims.filter((k) => !g.anims.exists(k)),
+        clothes: ['ragged_hat', 'ragged_shirt', 'ragged_pants', 'pants_denim', 'pants_rain', 'hat_straw', 'overalls', 'boots', 'backpack', 'scarf', 'ears', 'hairpin', 'sneakers', 'raincoat', 'hat_rain', 'hat_chef'].filter((k) => !g.textures.exists(`characters/${k}`)),
+        equipped: JSON.stringify(window.__RANCH__.store.data.equipped),
+      };
+    });
+    console.log(`   动作精灵图缺失: ${assets.sheetsMissing.length ? assets.sheetsMissing.join(',') : '无'}`);
+    console.log(`   动画缺失: ${assets.animsMissing.length ? assets.animsMissing.join(',') : '无'}`);
+    console.log(`   服装图层缺失: ${assets.clothes.length ? assets.clothes.join(',') : '无'}`);
+    console.log(`   开局装备: ${assets.equipped}`);
+    if (assets.sheetsMissing.length) errors.push(`[素材] 缺少精灵图 ${assets.sheetsMissing.join(',')}`);
+    if (assets.animsMissing.length) errors.push(`[素材] 缺少动画 ${assets.animsMissing.join(',')}`);
+    if (assets.clothes.length) errors.push(`[素材] 缺少服装图层 ${assets.clothes.join(',')}`);
+    if (!assets.equipped.includes('ragged_hat') || !assets.equipped.includes('ragged_shirt') || !assets.equipped.includes('ragged_pants')) {
+      errors.push(`[开局] 初始装备不是破旧三件套：${assets.equipped}`);
+    }
+
+    // 五个动作都要能播
+    const played = {};
+    for (const action of ['idle', 'hold', 'pickup', 'milk']) {
+      await page.evaluate((a) => {
+        const sc = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+        sc.player.startAction(a, 6000);
+      }, action);
+      await sleep(500);
+      played[action] = await page.evaluate(() => {
+        const sc = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+        return { action: sc.player.currentAction, playing: sc.player.baseSprite.anims.isPlaying };
+      });
+      await shot(`21d-boy-${action}`);
+    }
+    console.log(`   动作切换: ${JSON.stringify(played)}`);
+    Object.entries(played).forEach(([want, got]) => {
+      if (got.action !== want) errors.push(`[动作] 期望 ${want}，实际 ${got.action}`);
+    });
+    await page.evaluate(() => {
+      const sc = window.__RANCH__.game.scene.getScenes(true).find((x) => x.scene.key === 'Ranch');
+      sc.player.actionLock = null;
+    });
     const frames = [];
     await page.keyboard.down('ArrowLeft');
     // 无头环境是软件渲染，帧率很低，取样窗口要长一些才能覆盖完整循环
