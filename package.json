@@ -1,0 +1,33 @@
+{
+  "name": "rainbow-ranch",
+  "private": true,
+  "version": "1.0.0",
+  "description": "小小彩虹牧场 - 面向 5-8 岁儿童的轻度模拟经营牧场游戏",
+  "type": "module",
+  "scripts": {
+    "art": "node scripts/generate-art.mjs && node scripts/generate-art-extra.mjs && node scripts/generate-art-ui.mjs && node scripts/sync-assets.mjs",
+    "sync-assets": "node scripts/sync-assets.mjs",
+    "predev": "npm run sync-assets",
+    "dev": "vite",
+    "prebuild": "npm run sync-assets",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "verify": "npm run build && node scripts/verify.mjs",
+    "verify:quick": "node scripts/verify.mjs --quick"
+  },
+  "keywords": [
+    "game",
+    "phaser",
+    "kids",
+    "farming"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.12.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.4"
+  }
+}
