@@ -34,6 +34,7 @@ export class SkySystem {
   private stars: Phaser.GameObjects.Image[] = [];
   private moon: Phaser.GameObjects.Image;
   private sun: Phaser.GameObjects.Image;
+  private sunGlow: Phaser.GameObjects.Image;
   private puddles: Phaser.GameObjects.Image[] = [];
   private grassSway: Phaser.GameObjects.Particles.ParticleEmitter[] = [];
   private cloudTimer = 0;
@@ -94,7 +95,14 @@ export class SkySystem {
       .setDepth(DEPTH.night + 2)
       .setAlpha(0)
       .setScale(0.9);
-    this.sun = scene.add.image(w - 290, 180, 'ui/sun').setScrollFactor(0).setDepth(DEPTH.night + 2).setAlpha(0).setScale(1.6 * ART_K);
+    this.sunGlow = scene.add
+      .image(w - 290, 180, 'tex/glow')
+      .setScrollFactor(0)
+      .setDepth(DEPTH.night + 1)
+      .setAlpha(0)
+      .setScale(4.5)
+      .setBlendMode(Phaser.BlendModes.ADD);
+    this.sun = scene.add.image(w - 290, 180, 'ui/sun').setScrollFactor(0).setDepth(DEPTH.night + 2).setAlpha(0).setScale(1.35 * ART_K);
 
     // 云朵（世界坐标，带视差）
     for (let i = 0; i < 5; i += 1) {
@@ -225,7 +233,9 @@ export class SkySystem {
     this.stars.forEach((s) => s.setVisible(showSky && nightAlpha > 0.05));
     this.moon.setAlpha(nightAlpha * 0.95);
     this.moon.setVisible(showSky && nightAlpha > 0.05 && weather !== 'rainy');
-    this.sun.setAlpha(showSky && phase === 'day' ? (weather === 'sunny' ? 0.9 : 0.35) : 0);
+    const sunAlpha = showSky && phase === 'day' ? (weather === 'sunny' ? 0.72 : 0.3) : 0;
+    this.sun.setAlpha(sunAlpha);
+    this.sunGlow.setAlpha(sunAlpha * (weather === 'sunny' ? 0.55 : 0.2));
     this.ensureFireflies(phase === 'night' && !indoor);
     this.clouds.forEach((c) => {
       c.setVisible(showSky);
@@ -259,6 +269,7 @@ export class SkySystem {
     this.grassSway.forEach((g) => g.destroy());
     this.moon.destroy();
     this.sun.destroy();
+    this.sunGlow.destroy();
     this.tint.destroy();
     this.warm.destroy();
   }
