@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M6 22h20v1h-20zM5 23h1v16h-1zM26 23h1v16h-1zM5 39h22v1h-22zM7 1h18v1h-18zM6 2h1v9h-1zM25 2h1v9h-1zM2 11h28v1h-28zM2 14h28v1h-28z"/>
-<path fill="#ffd45c" d="M6 23h20v16h-20z"/>
-<path fill="#e0a92e" d="M15 23h2v16h-2z"/>
-<path fill="#ffd45c" d="M7 2h18v9h-18z"/>
-<path fill="#e0a92e" d="M15 2h2v9h-2z"/>
-<path fill="#ffd45c" d="M3 12h26v2h-26z"/>
-<path fill="#e0a92e" d="M3 13h26v1h-26z"/>
-<path fill="#e6bc68" d="M14 27h4v2h-4z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><path d="M32 41C48.78992 41 51 50.75 51 56C51 61.25 48.78992 71 32 71C15.210079999999998 71 13 61.25 13 56C13 50.75 15.210079999999998 41 32 41Z" fill="#ffd873" />
+<path d="M13 50c4 4 34 4 38 0v8c-6 4-32 4-38 0z" fill="#e0b23f" opacity=".55"/>
+<path d="M12 22c0-11 9-17 20-17s20 6 20 17z" fill="#ffd873" />
+<path d="M9 22c0-2 6-3 23-3s23 1 23 3-7 4-23 4-23-2-23-4z" fill="#e0b23f" />
+<rect x="29" y="44" width="6" height="26" rx="3" ry="3" fill="#e0b23f" opacity=".7"/>
+<ellipse cx="32" cy="56" rx="2.2" ry="2.2" fill="#ffd166" />
 </svg>

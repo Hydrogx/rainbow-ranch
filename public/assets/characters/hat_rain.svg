@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M7 1h18v1h-18zM6 2h1v9h-1zM25 2h1v9h-1zM2 11h28v1h-28zM2 14h28v1h-28z"/>
-<path fill="#ffd45c" d="M7 2h18v9h-18z"/>
-<path fill="#e0a92e" d="M7 3h18v1h-18z"/>
-<path fill="#ffd45c" d="M3 12h26v2h-26z"/>
-<path fill="#e0a92e" d="M3 13h26v1h-26z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><path d="M12 22c0-11 9-17 20-17s20 6 20 17z" fill="#ffd873" />
+<path d="M16 18c3-8 9-11 16-11s13 3 16 10c-8-4-24-4-32 1z" fill="#ffe9ab" opacity=".8"/>
+<path d="M9 22c0-2 6-3 23-3s23 1 23 3-7 4-23 4-23-2-23-4z" fill="#e0b23f" />
+<path d="M9 22c0-2 6-3 23-3v7c-17 0-23-2-23-4z" fill="#ffd873" />
 </svg>

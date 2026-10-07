@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M7 23h18v1h-18zM7 24h1v10h-1zM24 24h1v10h-1zM8 33h3v1h-3zM12 32h4v2h-4zM17 33h3v1h-3zM21 32h3v2h-3z"/>
-<path fill="#cfc6ad" d="M8 24h16v9h-16z"/>
-<path fill="#a89c82" d="M8 24h16v2h-16z"/>
-<path fill="#8d9a7a" d="M11 27h4v3h-4z"/>
-<path fill="#493b3b" d="M12 28h2v1h-2zM19 26h2v4h-2zM20 27h1v2h-1z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><path d="M32 41C47.02256 41 49 50.1 49 55C49 60.25 47.02256 70 32 70C16.977439999999998 70 15 60.25 15 55C15 50.1 16.977439999999998 41 32 41Z" fill="#d8cfb6" />
+<path d="M15 66c4 4 9 2 13 5 3-4 8-2 11 2 3-4 7-6 11-3l-1 6c-8 4-24 4-34 0z" fill="#b3a88b" />
+<rect x="24" y="52" width="9" height="8" rx="2" ry="2" fill="#9fb08a" transform="rotate(-8 28 56)"/>
+<path d="M40 46l4 5-4 4-4-4z" fill="#b3a88b" opacity=".8"/>
 </svg>

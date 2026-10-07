@@ -21,7 +21,7 @@ export const artName = (key: string) => art(key).key;
 
 /** 角色小头像：裁出像素站立图的第一帧 */
 export const charIcon = (kind: 'boy' | 'girl', size = 34): string =>
-  `<span class="ico char-ico" style="--s:${size}px"><span class="sheet-crop" style="--frames:2">${inlineSvg(`characters/${kind}_idle`)}</span></span>`;
+  `<span class="ico char-ico" style="--s:${size}px"><span class="sheet-crop" style="--frames:4">${inlineSvg(`characters/${kind}_idle`)}</span></span>`;
 
 /** 小圆点数字（背包数量等） */
 export const badge = (n: number): string => (n > 0 ? `<span class="badge">${n > 99 ? '99+' : n}</span>` : '');

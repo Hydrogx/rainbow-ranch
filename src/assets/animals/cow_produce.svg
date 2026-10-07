@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="880" height="170" viewBox="0 0 880 170" shape-rendering="geometricPrecision">
 <g transform="translate(0 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 0)"><path d="M69 137v23M58 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M111 137v23M100 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M143 130v30M132 160h22" fill="none"/></g>
@@ -27,7 +27,7 @@
     </g>
   </g></g>
 <g transform="translate(220 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 0)"><path d="M69 137v23M58 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M111 137v23M100 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M143 130v30M132 160h22" fill="none"/></g>
@@ -44,7 +44,7 @@
         <circle cx="174" cy="76" r="38" fill="#FFFDF5"/>
         <path d="M150 66c-13-19-30-15-34 0 7 9 25 9 34 0zM201 66c13-19 30-15 34 0-7 9-25 9-34 0z" fill="#EFA8A0"/>
         <path d="M171 88c-14 9-14 23 0 28 14-5 14-19 0-28z" fill="#EFA8A0"/>
-        <path d="M155 69h14M181 69h14" fill="none" stroke-width="4"/>
+        <path d="M155 69h14M181 69h14" fill="none" stroke-width="2"/>
         <g transform="translate(0 -2)">
           <path d="M186 108c0-6 8-9 8 0" fill="none"/>
           <circle cx="194" cy="114" r="6" fill="#FFD45C"/>
@@ -58,7 +58,7 @@
     </g>
   </g></g>
 <g transform="translate(440 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 0)"><path d="M69 137v23M58 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M111 137v23M100 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M143 130v30M132 160h22" fill="none"/></g>
@@ -89,7 +89,7 @@
     </g>
   </g></g>
 <g transform="translate(660 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 0)"><path d="M69 137v23M58 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M111 137v23M100 160h22" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M143 130v30M132 160h22" fill="none"/></g>

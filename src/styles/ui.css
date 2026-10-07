@@ -865,17 +865,16 @@ body {
   bottom: 0;
   width: calc(100% * var(--frames, 1));
   height: 100%;
-  image-rendering: pixelated;
 }
 
-/* 像素站立图裁切：只显示第一帧（订单头像 / 性别按钮共用） */
+/* 角色站立图裁切：只显示第一帧（订单头像 / 性别按钮共用） */
 .sheet-crop {
   position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   height: 100%;
-  aspect-ratio: 32 / 48;
+  aspect-ratio: 2 / 3;
   overflow: hidden;
   display: block;
 }
@@ -886,7 +885,6 @@ body {
   bottom: 0;
   height: 100%;
   width: calc(100% * var(--frames, 1));
-  image-rendering: pixelated;
 }
 
 .char-ico {

@@ -11,7 +11,7 @@ import {
   CHAR_KINDS,
   CHAR_FRAME_H,
   CHAR_FRAME_W,
-  PIXEL_SCALE,
+  CHAR_SCALE,
   characterAnimKey,
   characterSheetKey,
   type CharKind,
@@ -106,7 +106,7 @@ export class Player {
   private applyBodyScale(): void {
     this.baseSprite.setOrigin(0.5, 1);
     // 没有精灵图时退回矢量小人，需要按 2 倍栅格化的比例缩放
-    this.baseSprite.setScale(this.hasSheets() ? PIXEL_SCALE : 0.86 * ART_K);
+    this.baseSprite.setScale(this.hasSheets() ? CHAR_SCALE : 0.86 * ART_K);
   }
 
   /** 换角色 / 换装扮后重建图层 */
@@ -130,7 +130,7 @@ export class Player {
         if (existing.texture.key !== textureKey) existing.setTexture(textureKey);
         continue;
       }
-      const img = this.scene.add.image(0, 0, textureKey).setOrigin(0.5, 1).setScale(PIXEL_SCALE);
+      const img = this.scene.add.image(0, 0, textureKey).setOrigin(0.5, 1).setScale(CHAR_SCALE);
       this.equipLayer.add(img);
       this.layers[slot] = img;
     }
@@ -236,7 +236,7 @@ export class Player {
     const def = CHAR_ACTIONS[this.currentAction];
     const idx = this.baseSprite.anims.currentFrame ? this.baseSprite.anims.currentFrame.index : 0;
     const offset = def.overlay[Math.min(idx, def.overlay.length - 1)] ?? 0;
-    this.equipLayer.setY(offset * PIXEL_SCALE);
+    this.equipLayer.setY(offset * CHAR_SCALE);
   }
 
   /* ------------------------------------------------------------------ */

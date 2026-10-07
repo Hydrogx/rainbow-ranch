@@ -463,7 +463,7 @@ export class Panels {
         .join('');
       card.innerHTML = `
         <div class="order-head">
-          <span class="avatar"><span class="sheet-crop" style="--frames:2">${rawSvg(`characters/${def.character}_idle`, 'svg-icon')}</span></span>
+          <span class="avatar"><span class="sheet-crop" style="--frames:4">${rawSvg(`characters/${def.character}_idle`, 'svg-icon')}</span></span>
           <span>${def.name}<br /><small style="font-size:0.7em;color:#7a5a45">${def.kind}</small></span>
         </div>
         <div style="font-size:calc(19px * var(--ui-scale));color:#7a5a45">“${def.line}”</div>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="760" height="170" viewBox="0 0 760 170" shape-rendering="geometricPrecision">
 <g transform="translate(0 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 0)"><path d="M66 122v30M56 152h20" fill="none"/></g>
     <g transform="translate(0 -6)"><path d="M104 122v30M94 152h20" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M88 122v30" fill="none"/></g>
@@ -26,7 +26,7 @@
     </g>
   </g></g>
 <g transform="translate(190 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 -3)"><path d="M66 122v30M56 152h20" fill="none"/></g>
     <g transform="translate(0 -3)"><path d="M104 122v30M94 152h20" fill="none"/></g>
     <g transform="translate(-1 -1)"><path d="M88 122v30" fill="none"/></g>
@@ -52,7 +52,7 @@
     </g>
   </g></g>
 <g transform="translate(380 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 -6)"><path d="M66 122v30M56 152h20" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M104 122v30M94 152h20" fill="none"/></g>
     <g transform="translate(0 0)"><path d="M88 122v30" fill="none"/></g>
@@ -78,7 +78,7 @@
     </g>
   </g></g>
 <g transform="translate(570 0)">
-  <g stroke="#5A3D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#b08a6c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 -3)"><path d="M66 122v30M56 152h20" fill="none"/></g>
     <g transform="translate(0 -3)"><path d="M104 122v30M94 152h20" fill="none"/></g>
     <g transform="translate(-1 -1)"><path d="M88 122v30" fill="none"/></g>
@@ -96,7 +96,7 @@
         <path d="M130 58c3-15 15-21 25-16 11-6 25 3 22 17" fill="#FFFDF7"/>
         <ellipse cx="127" cy="70" rx="10" ry="7" fill="#E7CDB6" transform="rotate(-25 127 70)"/>
         <ellipse cx="176" cy="68" rx="10" ry="7" fill="#E7CDB6" transform="rotate(25 176 68)"/>
-        <path d="M140 74h8M159 74h8" fill="none" stroke-width="4"/>
+        <path d="M140 74h8M159 74h8" fill="none" stroke-width="2"/>
         <path d="M148 90c4 4 9 4 13 0" fill="none"/>
         <circle cx="139" cy="86" r="5" fill="#F6B6B0" stroke="none" opacity=".8"/>
         <circle cx="167" cy="86" r="5" fill="#F6B6B0" stroke="none" opacity=".8"/>

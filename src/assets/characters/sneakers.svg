@@ -1,6 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M8 39h8v1h-8zM16 39h8v1h-8zM8 40h1v6h-1zM15 40h1v6h-1zM16 40h1v6h-1zM23 40h1v6h-1zM7 46h9v1h-9zM15 46h9v1h-9z"/>
-<path fill="#b6e36b" d="M9 40h6v6h-6zM17 40h6v6h-6z"/>
-<path fill="#d7f5a8" d="M9 40h6v1h-6zM17 40h6v1h-6z"/>
-<path fill="#ffffff" d="M9 44h6v2h-6zM17 44h6v2h-6z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><path d="M26 84.4C32.18576 84.4 33 87.39 33 89C33 90.75 32.18576 94 26 94C19.814239999999998 94 19 90.75 19 89C19 87.39 19.814239999999998 84.4 26 84.4Z" fill="#a8dc72" />
+<path d="M38 84.4C44.18576 84.4 45 87.39 45 89C45 90.75 44.18576 94 38 94C31.814239999999998 94 31 90.75 31 89C31 87.39 31.814239999999998 84.4 38 84.4Z" fill="#a8dc72" />
+<rect x="20" y="89" width="12" height="5" rx="2.5" ry="2.5" fill="#f4ffe4" />
+<rect x="32" y="89" width="12" height="5" rx="2.5" ry="2.5" fill="#f4ffe4" />
+<rect x="21" y="84" width="10" height="4" rx="2" ry="2" fill="#7cbb4a" opacity=".7"/>
+<rect x="33" y="84" width="10" height="4" rx="2" ry="2" fill="#7cbb4a" opacity=".7"/>
 </svg>

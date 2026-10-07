@@ -7,7 +7,7 @@ import { store } from '../game/GameState';
 import { audio } from '../systems/AudioSystem';
 import { bus, EV } from '../game/EventBus';
 import type { CharacterKind } from '../game/types';
-import { ART_K, CHAR_FRAME_H, CHAR_KINDS, PIXEL_SCALE, characterSheetKey, type CharKind } from '../systems/TextureFactory';
+import { ART_K, CHAR_FRAME_H, CHAR_KINDS, CHAR_SCALE, characterSheetKey, type CharKind } from '../systems/TextureFactory';
 
 export class TitleScene extends Phaser.Scene {
   constructor() {
@@ -95,7 +95,7 @@ export class TitleScene extends Phaser.Scene {
     const sheet = characterSheetKey(kind, 'idle');
     const hasSheet = CHAR_KINDS.includes(kind) && this.textures.exists(sheet);
     const character = hasSheet
-      ? this.add.sprite(0, 52 * scale, sheet, 0).setOrigin(0.5, 1).setScale((168 / CHAR_FRAME_H) * scale * (PIXEL_SCALE / 4))
+      ? this.add.sprite(0, 52 * scale, sheet, 0).setOrigin(0.5, 1).setScale((168 / CHAR_FRAME_H) * scale * (CHAR_SCALE / 2))
       : this.add.image(0, 52 * scale, `characters/${kind}`).setOrigin(0.5, 1).setScale(0.8 * scale * ART_K);
     const name = this.add
       .text(0, 150 * scale, kind === 'boy' ? '男孩' : '女孩', {

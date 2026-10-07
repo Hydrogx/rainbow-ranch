@@ -328,7 +328,7 @@ export class Hud {
     // 身体用像素站立图的第 0 帧（CSS 裁切），装扮图层都是同尺寸单帧，天然对齐
     const sheet = `characters/${kind}_idle`;
     if (ART[sheet]) {
-      parts.push(`<div class="layer sheet-layer" style="--frames:2;--frame:0">${rawSvg(sheet, 'svg-icon')}</div>`);
+      parts.push(`<div class="layer sheet-layer" style="--frames:4;--frame:0">${rawSvg(sheet, 'svg-icon')}</div>`);
     } else {
       parts.push(`<div class="layer">${rawSvg(kind === 'boy' ? 'characters/boy' : 'characters/girl', 'svg-icon')}</div>`);
     }

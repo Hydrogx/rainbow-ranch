@@ -1,10 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M10 2h11v1h-11zM9 3h1v6h-1zM21 3h1v4h-1zM22 7h1v2h-1z"/>
-<path fill="#8f7342" d="M10 3h11v6h-11z"/>
-<path fill="#c9a86a" d="M11 4h9v3h-9z"/>
-<path fill="#e0c48c" d="M12 4h4v1h-4z"/>
-<path fill="#493b3b" d="M2 9h6v1h-6zM13 9h5v1h-5zM24 9h6v1h-6zM2 12h5v1h-5zM12 12h8v1h-8zM25 12h5v1h-5z"/>
-<path fill="#c9a86a" d="M3 10h25v2h-25z"/>
-<path fill="#8f7342" d="M3 11h10v1h-10zM16 11h12v1h-12z"/>
-<path fill="#493b3b" d="M14 4h2v2h-2z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><path d="M14 16c0-8 8-12 18-12s18 4 18 12c0 3-2 5-5 5H19c-3 0-5-2-5-5z" fill="#cdb488" />
+<path d="M16 16c2-6 8-9 16-9 7 0 13 2 16 7-6-3-20-4-32 2z" fill="#ddc79c" opacity=".8"/>
+<path d="M11 17c0-2 4-3 21-3s21 1 21 3-5 4-21 4-21-2-21-4z" fill="#a08a5f" />
+<path d="M11 17c0-2 4-3 21-3v7c-16 0-21-2-21-4z" fill="#cdb488" />
+<path d="M22 7c4-3 12-3 16 0-4 2-12 2-16 0z" fill="#7a6742" opacity=".6"/>
 </svg>

@@ -5,7 +5,7 @@
   "description": "小小彩虹牧场 - 面向 5-8 岁儿童的轻度模拟经营牧场游戏",
   "type": "module",
   "scripts": {
-    "art": "node scripts/generate-art.mjs && node scripts/generate-pixel-characters.mjs && node scripts/generate-animal-anim.mjs && node scripts/generate-art-extra.mjs && node scripts/generate-art-ui.mjs && node scripts/sync-assets.mjs",
+    "art": "node scripts/generate-art.mjs && node scripts/generate-cozy-characters.mjs && node scripts/generate-animal-anim.mjs && node scripts/generate-art-extra.mjs && node scripts/generate-art-ui.mjs && node scripts/sync-assets.mjs",
     "sync-assets": "node scripts/sync-assets.mjs",
     "predev": "npm run sync-assets",
     "dev": "vite",

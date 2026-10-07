@@ -1,7 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M10 23h4v1h-4zM18 23h4v1h-4zM10 24h1v9h-1zM21 24h1v9h-1zM9 32h12v1h-12z"/>
-<path fill="#5b8def" d="M11 24h3v8h-3zM18 24h3v8h-3z"/>
-<path fill="#5b8def" d="M10 26h12v6h-12z"/>
-<path fill="#8fb4f5" d="M11 27h10v3h-10z"/>
-<path fill="#e6bc68" d="M11 25h1v1h-1zM20 25h1v1h-1z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><rect x="18" y="43" width="28" height="26" rx="8" ry="8" fill="#6c9fe0" />
+<path d="M24 44L24 52" stroke="#4a78b8" stroke-width="5" stroke-linecap="round" fill="none" />
+<path d="M40 44L40 52" stroke="#4a78b8" stroke-width="5" stroke-linecap="round" fill="none" />
+<rect x="22" y="48" width="20" height="14" rx="5" ry="5" fill="#9dc0f2" opacity=".55"/>
+<ellipse cx="24" cy="45" rx="2" ry="2" fill="#ffd166" />
+<ellipse cx="40" cy="45" rx="2" ry="2" fill="#ffd166" />
 </svg>

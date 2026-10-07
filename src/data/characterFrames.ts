@@ -1,6 +1,6 @@
 /**
- * 由 scripts/generate-pixel-characters.mjs 自动生成，请勿手改。
- * frames: 帧数 / fps: 播放速度 / loop: 是否循环 / overlay: 服装图层需要跟随的纵向像素偏移
+ * 由 scripts/generate-cozy-characters.mjs 自动生成，请勿手改。
+ * frames: 帧数 / fps: 播放速度 / loop: 是否循环 / overlay: 服装图层跟随的纵向偏移（设计单位）
  */
 export interface CharActionDef {
   frames: number;
@@ -15,52 +15,57 @@ export const CHAR_ACTIONS: Record<string, CharActionDef> = {
     "fps": 3,
     "loop": true,
     "label": "原地休息",
-    "frames": 2,
+    "frames": 4,
     "overlay": [
+      0,
+      1.5,
       0,
       1
     ]
   },
   "walk": {
-    "fps": 7,
+    "fps": 9,
     "loop": true,
     "label": "走路",
-    "frames": 4,
+    "frames": 6,
     "overlay": [
-      0,
       -1,
-      0,
+      -2.5,
+      -1,
+      -1,
+      -2.5,
       -1
     ]
   },
   "hold": {
-    "fps": 4,
+    "fps": 3,
     "loop": true,
     "label": "拿东西",
     "frames": 2,
     "overlay": [
       0,
-      1
+      1.5
     ]
   },
   "pickup": {
-    "fps": 8,
+    "fps": 6,
     "loop": false,
     "label": "捡东西",
     "frames": 2,
     "overlay": [
-      3,
-      4
+      6,
+      8
     ]
   },
   "milk": {
-    "fps": 6,
+    "fps": 5,
     "loop": true,
     "label": "挤东西",
-    "frames": 2,
+    "frames": 3,
     "overlay": [
       0,
-      1
+      2,
+      2
     ]
   }
 };

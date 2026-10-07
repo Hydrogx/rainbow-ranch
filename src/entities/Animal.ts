@@ -27,21 +27,21 @@ export interface AnimalWorld {
 }
 
 const SPECIES_SCALE: Record<Species, number> = {
-  chicken: 0.66,
-  sheep: 0.7,
-  cow: 0.68,
+  chicken: 0.82,
+  sheep: 0.88,
+  cow: 0.86,
 };
 
 const SPECIES_BODY: Record<Species, { w: number; h: number }> = {
-  chicken: { w: 56, h: 34 },
-  sheep: { w: 74, h: 40 },
-  cow: { w: 96, h: 46 },
+  chicken: { w: 64, h: 38 },
+  sheep: { w: 86, h: 44 },
+  cow: { w: 108, h: 52 },
 };
 
 const SPECIES_SPEED: Record<Species, number> = {
-  chicken: 62,
-  sheep: 44,
-  cow: 38,
+  chicken: 68,
+  sheep: 48,
+  cow: 42,
 };
 
 export class Animal {

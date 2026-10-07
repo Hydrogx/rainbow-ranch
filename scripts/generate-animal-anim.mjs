@@ -18,7 +18,8 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join(root, 'src', 'assets');
 
-const INK = '#5A3D2E';
+const INK = '#b08a6c';   // 柔和暖棕描边（不再是硬黑边）
+const SOFT = 'stroke-width="2.4"';
 const wrap = (w, h, body, frames) =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${w * frames}" height="${h}" viewBox="0 0 ${w * frames} ${h}" shape-rendering="geometricPrecision">\n${body}\n</svg>\n`;
 
@@ -32,13 +33,13 @@ const CH_H = 160;
 function chickenFrame({ by = 0, headDy = 0, legL = 0, legR = 0, eye = 'open', egg = false, combDy = 0, wingDy = 0 }) {
   const eyeArt =
     eye === 'closed'
-      ? `<path d="M116 52h12" fill="none" stroke="#30251F" stroke-width="4"/>`
+      ? `<path d="M116 52h12" fill="none" stroke="#30251F" stroke-width="2"/>`
       : `<circle cx="122" cy="52" r="5" fill="#30251F" stroke="none"/>`;
   const eggArt = egg
-    ? `<ellipse cx="80" cy="126" rx="13" ry="17" fill="#FFF8E7" stroke="${INK}" stroke-width="4"/>`
+    ? `<ellipse cx="80" cy="126" rx="13" ry="17" fill="#FFF8E7" stroke="${INK}" stroke-width="2"/>`
     : '';
   return `
-  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 ${legL})"><path d="M68 128v19M59 148h18" fill="none"/></g>
     <g transform="translate(0 ${legR})"><path d="M94 128v19M85 148h18" fill="none"/></g>
     ${eggArt}
@@ -91,10 +92,10 @@ const SH_H = 170;
 function sheepFrame({ by = 0, headDy = 0, legL = 0, legR = 0, legL2 = 0, legR2 = 0, eye = 'open', wool = 0, ball = false }) {
   const eyeArt =
     eye === 'closed'
-      ? `<path d="M140 74h8M159 74h8" fill="none" stroke-width="4"/>`
+      ? `<path d="M140 74h8M159 74h8" fill="none" stroke-width="2"/>`
       : `<circle cx="144" cy="74" r="4.5" fill="#30251F" stroke="none"/><circle cx="163" cy="74" r="4.5" fill="#30251F" stroke="none"/>`;
   const ballArt = ball
-    ? `<g stroke="${INK}" stroke-width="5">
+    ? `<g stroke="${INK}" stroke-width="2.4">
         <circle cx="164" cy="146" r="15" fill="#FFFDF7"/>
         <circle cx="150" cy="152" r="11" fill="#FFFDF7"/>
         <circle cx="176" cy="152" r="10" fill="#FFFDF7"/>
@@ -102,7 +103,7 @@ function sheepFrame({ by = 0, headDy = 0, legL = 0, legR = 0, legL2 = 0, legR2 =
     : '';
   const r = (v) => 25 + v;
   return `
-  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 ${legL})"><path d="M66 122v30M56 152h20" fill="none"/></g>
     <g transform="translate(0 ${legR})"><path d="M104 122v30M94 152h20" fill="none"/></g>
     <g transform="translate(${legL2} ${legR2})"><path d="M88 122v30" fill="none"/></g>
@@ -161,7 +162,7 @@ const CO_H = 170;
 function cowFrame({ by = 0, headDy = 0, legL = 0, legR = 0, legL2 = 0, legR2 = 0, eye = 'open', tail = 0, milk = 0, bell = 0 }) {
   const eyeArt =
     eye === 'closed'
-      ? `<path d="M155 69h14M181 69h14" fill="none" stroke-width="4"/>`
+      ? `<path d="M155 69h14M181 69h14" fill="none" stroke-width="2"/>`
       : `<circle cx="162" cy="69" r="5" fill="#30251F" stroke="none"/><circle cx="188" cy="69" r="5" fill="#30251F" stroke="none"/>`;
   const milkArt = milk
     ? `<g stroke="none" fill="#FFFDF5">
@@ -171,7 +172,7 @@ function cowFrame({ by = 0, headDy = 0, legL = 0, legR = 0, legL2 = 0, legR2 = 0
        </g>`
     : '';
   return `
-  <g stroke="${INK}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
     <g transform="translate(0 ${legL})"><path d="M69 137v23M58 160h22" fill="none"/></g>
     <g transform="translate(0 ${legR})"><path d="M111 137v23M100 160h22" fill="none"/></g>
     <g transform="translate(${legL2} ${legR2})"><path d="M143 130v30M132 160h22" fill="none"/></g>

@@ -1,7 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M8 1h16v1h-16zM7 2h1v7h-1zM24 2h1v7h-1zM7 9h18v1h-18zM7 12h18v1h-18z"/>
-<path fill="#ffffff" d="M8 2h16v7h-16z"/>
-<path fill="#dfe7ee" d="M8 2h16v1h-16zM8 5h16v1h-16z"/>
-<path fill="#ffffff" d="M9 9h14v3h-14z"/>
-<path fill="#dfe7ee" d="M9 10h14v1h-14z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><path d="M32 1C47.02256 1 49 6.85 49 10C49 12.1 47.02256 16 32 16C16.977439999999998 16 15 12.1 15 10C15 6.85 16.977439999999998 1 32 1Z" fill="#ffffff" />
+<ellipse cx="20" cy="8" rx="8" ry="8" fill="#ffffff" />
+<ellipse cx="44" cy="8" rx="8" ry="8" fill="#ffffff" />
+<ellipse cx="32" cy="6" rx="10" ry="9" fill="#ffffff" />
+<rect x="17" y="15" width="30" height="8" rx="3" ry="3" fill="#e3ebf2" />
+<path d="M20 8c3-4 8-6 12-6-4 2-9 3-12 6z" fill="#ffffff" opacity=".9"/>
 </svg>

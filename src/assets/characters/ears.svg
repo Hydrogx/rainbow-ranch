@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="48" viewBox="0 0 32 48" shape-rendering="crispEdges">
-<path fill="#493b3b" d="M7 5h18v1h-18zM7 8h18v1h-18zM3 1h7v1h-7zM2 2h1v5h-1zM10 2h1v5h-1zM3 7h7v1h-7zM20 1h7v1h-7zM19 2h1v5h-1zM27 2h1v5h-1zM20 7h7v1h-7z"/>
-<path fill="#ff8fb1" d="M7 6h18v2h-18z"/>
-<path fill="#ffb3c7" d="M4 2h5v5h-5zM21 2h5v5h-5z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="96" viewBox="0 0 64 96">
+<defs><defs><linearGradient id="g-skin" x1="0.25" y1="0.1" x2="0.7" y2="1"><stop offset="0" stop-color="#ffe2c2"/><stop offset="1" stop-color="#f2c49b"/></linearGradient><linearGradient id="g-hair" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#a3744c"/><stop offset="1" stop-color="#5a3c26"/></linearGradient><linearGradient id="g-shirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-shirtShade" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#e7dcc4"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient><linearGradient id="g-pants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#7ea9dc"/><stop offset="1" stop-color="#5c86bb"/></linearGradient><linearGradient id="g-boot" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#8f6b4e"/><stop offset="1" stop-color="#6f5138"/></linearGradient><linearGradient id="g-plainPants" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#c9bda6"/><stop offset="1" stop-color="#a99d86"/></linearGradient><linearGradient id="g-plainShirt" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#fdf7ea"/><stop offset="1" stop-color="#e7dcc4"/></linearGradient></defs></defs><path d="M14 7c0-5 4-8 8-8s8 3 8 8-4 7-8 7-8-2-8-7z" fill="#ffb3cd" />
+<path d="M34 7c0-5 4-8 8-8s8 3 8 8-4 7-8 7-8-2-8-7z" fill="#ffb3cd" />
+<path d="M17 7c0-3 2-5 5-5s5 2 5 5-2 4-5 4-5-1-5-4z" fill="#e8849f" opacity=".6"/>
+<path d="M37 7c0-3 2-5 5-5s5 2 5 5-2 4-5 4-5-1-5-4z" fill="#e8849f" opacity=".6"/>
+<rect x="13" y="13" width="38" height="4.5" rx="2.2" ry="2.2" fill="#e8849f" />
 </svg>

@@ -249,10 +249,10 @@ export const ANIMAL_SIZE: Record<AnimalSpecies, { w: number; h: number }> = {
   cow: { w: 220, h: 170 },
 };
 
-export const CHAR_FRAME_W = 32;
-export const CHAR_FRAME_H = 48;
-/** 像素角色的整数放大倍数：最近邻采样 + 整数倍，像素边缘锐利不抖 */
-export const PIXEL_SCALE = 4;
+export const CHAR_FRAME_W = 64;
+export const CHAR_FRAME_H = 96;
+/** 角色显示放大倍数：64x96 的设计稿 → 约 85x128，和牛羊等场景物件比例协调 */
+export const CHAR_SCALE = 4 / 3;
 
 export interface SheetDef {
   key: string;
@@ -272,11 +272,11 @@ export function allSheetDefs(): SheetDef[] {
   const out: SheetDef[] = [];
   for (const kind of CHAR_KINDS) {
     for (const action of CHAR_ACTION_ORDER) {
-      out.push({ key: characterSheetKey(kind, action), frameW: CHAR_FRAME_W, frameH: CHAR_FRAME_H, frames: CHAR_ACTIONS[action].frames, pixel: true });
+      out.push({ key: characterSheetKey(kind, action), frameW: CHAR_FRAME_W, frameH: CHAR_FRAME_H, frames: CHAR_ACTIONS[action].frames, pixel: false });
     }
   }
   for (const key of CLOTHING_KEYS) {
-    out.push({ key: `characters/${key}`, frameW: CHAR_FRAME_W, frameH: CHAR_FRAME_H, frames: 1, pixel: true });
+    out.push({ key: `characters/${key}`, frameW: CHAR_FRAME_W, frameH: CHAR_FRAME_H, frames: 1, pixel: false });
   }
   for (const species of ANIMAL_SPECIES) {
     for (const action of ANIMAL_ACTION_ORDER) {
